@@ -16,8 +16,8 @@ spring:
   datasource:
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3305/board?useUnicode=true&characterEncoding=UTF-8
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://mariadb.cjq82ikaejvr.ap-northeast-2.rds.amazonaws.com:3306/project2?useUnicode=true&characterEncoding=UTF-8
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
@@ -30,6 +30,24 @@ spring:
 
 jwt:
   secret-key-source: ${JWT_SECRET_KEY}
+
+cloud:
+  aws:
+    s3:
+      buckets:
+        bucket1:
+          name: project2-profile
+        bucket2:
+          name: project2-book
+    credentials:
+      access-key: ${ACCESS-KEY}
+      secret-key: ${SECRET-KEY}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
 
 springdoc:
   default-consumes-media-type: application/json
