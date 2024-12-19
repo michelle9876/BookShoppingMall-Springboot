@@ -31,6 +31,8 @@ public class MyPageService {
 
     //cart repository
     private final CartRepository cartRepository;
+    //payment repository
+    private final PaymentRepository paymentRepository;
 
 
     //유저 정보 가지고오기
@@ -194,5 +196,93 @@ public class MyPageService {
         return new DefaultDTO(MyPageStatus.CART_DELETE);
     }
 
+
+
+    //결제 내역 목록
+    public PaymentListDTO getPaymentList(Integer userId) {
+        List<Payment> paymentList = paymentRepository.findAllByUser_UserId(userId);
+
+        List<PaymentDetailDTO> itmes = paymentList.stream().map(
+                //Payment -> PaymentDetailDTO
+                item -> PaymentDetailDTO.builder()
+                        .userId(userId)
+                        .paymentId(item.getPaymentId())
+                        .paymentCard(item.getPaymentCard())
+                        .zipCode(item.getZipCode())
+                        .mainAddress(item.getMainAddress())
+                        .detailsAddress(item.getDetailsAddress())
+                        .totalPrice(Math.round(item.getTotalPrice()) )
+                        .receiverName(item.getReceiverName())
+                        .receiverPhone(item.getReceiverPhone())
+                        .paymentDate(item.getPaymentDate())
+                        .expectedDelivery(item.getExpectedDelivery())
+                        .paymentProducts(item.getPaymentProducts().stream().map(
+                                product -> PaymentProductDTO.builder()
+                                        .paymentProductId(product.getPaymentProductId())
+                                        .bookId(product.getBook().getBookId())
+                                        .title(product.getBook().getTitle())
+                                        .publisher(product.getBook().getPublisher())
+                                        .bookImage(product.getBook().getBookImageUrl())
+                                        .author(product.getBook().getAuthor())
+                                        .eachPrice((int) product.getBook().getPrice())
+                                        .eachTotalPrice(Math.round(product.getTotalPrice()))
+                                        .quantity(product.getQuantity())
+                                        .build()
+                        ).toList())
+                        .build()
+        ).toList();
+
+        PaymentListDTO result = new PaymentListDTO();
+        result.setPayments(itmes);
+        result.setStatus(new DefaultDTO(MyPageStatus.PAYMENT_LIST_RETURN));
+        return result;
+    }
+
+    //결제내역 상세
+    public PaymentListDTO getPaymentDetail(Integer userId, String id) {
+        Integer paymentId = Integer.valueOf(id);
+
+        Payment payment = paymentRepository.findByIdJoinPaymentProduct(paymentId).orElse(null);
+        if(payment == null) {
+            return new PaymentListDTO(MyPageStatus.PAYMENT_NOT_FOUNDED);
+        }
+
+        PaymentDetailDTO detailInfo = PaymentDetailDTO.builder()
+                .userId(userId)
+                .paymentId(payment.getPaymentId())
+                .paymentCard(payment.getPaymentCard())
+                .zipCode(payment.getZipCode())
+                .mainAddress(payment.getMainAddress())
+                .detailsAddress(payment.getDetailsAddress())
+                .totalPrice(Math.round(payment.getTotalPrice()) )
+                .receiverName(payment.getReceiverName())
+                .receiverPhone(payment.getReceiverPhone())
+                .paymentDate(payment.getPaymentDate())
+                .expectedDelivery(payment.getExpectedDelivery())
+                .paymentProducts(payment.getPaymentProducts().stream().map(
+                        product -> PaymentProductDTO.builder()
+                                .paymentProductId(product.getPaymentProductId())
+                                .bookId(product.getBook().getBookId())
+                                .title(product.getBook().getTitle())
+                                .publisher(product.getBook().getPublisher())
+                                .bookImage(product.getBook().getBookImageUrl())
+                                .author(product.getBook().getAuthor())
+                                .eachPrice((int) product.getBook().getPrice())
+                                .eachTotalPrice(Math.round(product.getTotalPrice()))
+                                .quantity(product.getQuantity())
+                                .build()
+                ).toList())
+                .build();
+
+
+        List<PaymentDetailDTO> payments = new ArrayList<>();
+        payments.add(detailInfo);
+
+        PaymentListDTO result = new PaymentListDTO();
+        result.setStatus(new DefaultDTO(MyPageStatus.PAYMENT_RETURN));
+        result.setPayments(payments);
+
+        return result;
+    }
 
 }

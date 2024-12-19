@@ -161,4 +161,42 @@ public class MyPageController {
     }
 
 
+    //결제내역
+    @GetMapping("/getPaymentList")
+    public ResponseEntity<PaymentListDTO> getPaymentList(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        // 토큰에서 user 정보 가져오기
+        if (userDetails == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new PaymentListDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+        }
+        Integer userId = userDetails.getUserId();
+
+        //결제내역 목록 가지고오기
+        PaymentListDTO result = myPageService.getPaymentList(userId);
+
+        return ResponseEntity.ok(result);
+    }
+
+    // 결제 상세정보
+    @GetMapping("/getPaymentDetail/{id}")
+    public ResponseEntity<PaymentListDTO> getPaymentDetail(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable String id
+    ) {
+        // 토큰에서 user 정보 가져오기
+        if (userDetails == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new PaymentListDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+        }
+        Integer userId = userDetails.getUserId();
+
+        //결제내역 상세 가지고오기
+        PaymentListDTO result = myPageService.getPaymentDetail(userId, id);
+
+        return ResponseEntity.ok(result);
+    }
 }
