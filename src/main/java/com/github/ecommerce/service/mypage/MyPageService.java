@@ -29,6 +29,9 @@ public class MyPageService {
     // s3 service
     private final AwsS3Service awsS3Service;
 
+    //cart repository
+    private final CartRepository cartRepository;
+
 
     //유저 정보 가지고오기
     public UserInfoDTO getUserInfo(Integer userId) {
@@ -107,5 +110,89 @@ public class MyPageService {
 
         return result;
     }
+
+    //장바구니 목록 가지고오기
+    public CartListDTO getCartItems(Integer userId) {
+        List<Cart> cartList = cartRepository.findAllByUserId(userId);
+        List<CartDetailDTO> items = cartList.stream().map(
+                //Cart -> CartDetailDTO
+                item -> CartDetailDTO.builder()
+                        .userId(item.getUser().getUserId())
+                        .cartId(item.getCartId())
+                        .bookId(item.getBook().getBookId())
+                        .title(item.getBook().getTitle())
+                        .price((int) item.getBook().getPrice())
+                        .author(item.getBook().getAuthor())
+                        .publisher(item.getBook().getPublisher())
+                        .bookImage(item.getBook().getBookImageUrl())
+                        .quantity(item.getQuantity())
+                        .build()
+        ).toList();
+
+        CartListDTO result = new CartListDTO();
+        result.setCartItems(items);
+        result.setStatus(new DefaultDTO(MyPageStatus.CART_ITEMS_RETURN));
+        return result;
+    }
+
+    //장바구니 상세
+    public CartListDTO getCartItem(Integer userId, String id) {
+        Integer cartId = Integer.valueOf(id);
+        Cart item = cartRepository.findByIdFetchJoin(cartId).orElse(null);
+        if(item == null) {
+            return new CartListDTO(MyPageStatus.CART_NOT_FOUNDED);
+        }else if(!item.getUser().getUserId().equals(userId)) {
+            return new CartListDTO(MyPageStatus.USER_ERROR_FORBIDDEN);
+        }
+        CartDetailDTO cart = CartDetailDTO.builder()
+                .userId(item.getUser().getUserId())
+                .cartId(item.getCartId())
+                .bookId(item.getBook().getBookId())
+                .title(item.getBook().getTitle())
+                .price((int) item.getBook().getPrice())
+                .author(item.getBook().getAuthor())
+                .publisher(item.getBook().getPublisher())
+                .bookImage(item.getBook().getBookImageUrl())
+                .quantity(item.getQuantity())
+                .build();
+
+
+        List<CartDetailDTO> carts = new ArrayList<>();
+        carts.add(cart);
+        CartListDTO result = new CartListDTO();
+        result.setStatus(new DefaultDTO(MyPageStatus.CART_RETURN));
+        result.setCartItems(carts);
+
+        return result;
+    }
+
+    //장바구니 옵션 수정
+    @Transactional(transactionManager = "tmJpa1")
+    public DefaultDTO putCartOption(Integer userId, CartDetailDTO cartDetailDTO) {
+        Cart cartItem = cartRepository.findById(cartDetailDTO.getCartId()).orElse(null);
+        if(cartItem == null) {
+            return new DefaultDTO(MyPageStatus.CART_ERROR);
+        }else if(!cartItem.getUser().getUserId().equals(userId)){
+            return new DefaultDTO(MyPageStatus.USER_ERROR_FORBIDDEN);
+        }
+        cartItem.setQuantity(cartDetailDTO.getQuantity());
+        return new DefaultDTO(MyPageStatus.CART_PUT);
+    }
+
+    //장바구니 삭제
+    @Transactional(transactionManager = "tmJpa1")
+    public DefaultDTO deleteCartItems(List<CartDetailDTO>  cartDetailDTOs) {
+
+        // 각 항목에 대해 삭제 처리
+        for (CartDetailDTO cartDetailDTO : cartDetailDTOs) {
+            Cart cartItem = cartRepository.findById(cartDetailDTO.getCartId()).orElse(null);
+            if(cartItem == null) {
+                return new DefaultDTO(MyPageStatus.CART_ERROR);
+            }
+            cartRepository.delete(cartItem);
+        }
+        return new DefaultDTO(MyPageStatus.CART_DELETE);
+    }
+
 
 }
