@@ -1,6 +1,7 @@
 package com.github.ecommerce.config.security;
 
 import com.github.ecommerce.web.filter.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,15 +38,16 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-//                .authorizeHttpRequests(authz -> authz
-//                        .requestMatchers("/resources/static/**","/auth/login","/auth/signup").permitAll()
-//                        .requestMatchers("/auth/secession").hasAuthority("ROLE_USER")
-//                        .anyRequest().authenticated()
-//                )
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/resources/static/**","/auth/login","/auth/signup","/books","/books/{id}","books/category/{category}").permitAll()
+                        .requestMatchers("/auth/secession", "/cart/add").hasAuthority("ROLE_USER")
+                        .anyRequest().authenticated()
+                )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                         .accessDeniedHandler(new CustomerAccessDeniedHandler())
                 )
+
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
