@@ -31,22 +31,22 @@ public class User {
     @Email(message = "유효한 이메일 형식이어야 합니다.")
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     @NotEmpty(message = "비밀번호는 필수입니다.")
     private String password;
 
-    @Column(name = "user_name")
+    @Column(name = "user_name", nullable = false)
     @NotEmpty(message = "사용자 이름은 필수입니다.")
     private String userName;
 
     @Column(name = "profile_image")
     private String profileImage;
 
-    @Column(name = "phone")
+    @Column(name = "phone", nullable = false)
     @NotEmpty(message = "전화번호는 필수입니다.")
     private String phone;
 
-    @Column(name = "gender")
+    @Column(name = "gender", nullable = false)
     @NotEmpty(message = "성별은 필수입니다.")
     private String gender;
 
@@ -54,11 +54,11 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "zip_code")
+    @Column(name = "zip_code", nullable = false)
     @NotEmpty(message = "우편번호는 필수입니다.")
     private String zipCode;
 
-    @Column(name = "main_address")
+    @Column(name = "main_address", nullable = false)
     @NotEmpty(message = "주소는 필수입니다.")
     private String mainAddress;
 
