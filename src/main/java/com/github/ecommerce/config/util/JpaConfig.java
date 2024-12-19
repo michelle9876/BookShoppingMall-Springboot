@@ -25,9 +25,7 @@ import java.util.Map;
 @EntityScan(basePackages = "com.github.ecommerce.data.entity.auth")
 @EnableJpaRepositories(
         basePackages = {
-                "com.github.ecommerce.data.repository.auth",
-                "com.github.ecommerce.data.repository.book",
-                "com.github.ecommerce.data.repository.cart"
+                "com.github.ecommerce.data.repository"
         },
         entityManagerFactoryRef = "entityManagerFactoryBean1",
         transactionManagerRef = "tmJpa1"
@@ -50,9 +48,7 @@ public class JpaConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
         em.setPackagesToScan(
-                "com.github.ecommerce.data.entity.auth",
-                "com.github.ecommerce.data.entity.book",
-                "com.github.ecommerce.data.entity.cart"
+                "com.github.ecommerce.data.entity"
         );
 
         em.setJpaVendorAdapter(vendorAdapter);
