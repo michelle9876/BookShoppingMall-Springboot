@@ -90,7 +90,7 @@ public class AuthService {
 
         if (!isPasswordStrong(password)) {
             log.warn("비밀번호가 너무 약합니다.");
-            throw new WeakPasswordException("비밀번호는 최소 8자 이상이어야 합니다."); // 사용자 정의 예외
+            throw new WeakPasswordException("비밀번호는 최소 8자 이상이어야 합니다.");
         }
 
         String profileImageUrl;
