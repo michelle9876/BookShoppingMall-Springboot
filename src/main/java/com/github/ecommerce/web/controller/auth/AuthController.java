@@ -1,40 +1,55 @@
 package com.github.ecommerce.web.controller.auth;
 
 
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import com.github.ecommerce.service.auth.AuthService;
+import com.github.ecommerce.service.exception.NotAcceptException;
+import com.github.ecommerce.service.exception.NotFoundException;
+import com.github.ecommerce.web.dto.auth.LoginRequest;
+import com.github.ecommerce.web.dto.auth.SignRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @RestController
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final S3Client s3Client;
+    private final AuthService authService;
 
-    @Value("${cloud.aws.s3.buckets.bucket1.name}")
-    private String bucket1;
-
-    @PostMapping("api/save")
-    public String saveFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
-        String originalFilename = multipartFile.getOriginalFilename();
-
-        // S3에 파일 업로드
-        PutObjectRequest putRequest = PutObjectRequest.builder()
-                .bucket(bucket1)
-                .key(originalFilename)
-                .contentType(multipartFile.getContentType()) // MIME 타입 설정
-                .build();
-
-        s3Client.putObject(putRequest, RequestBody.fromInputStream(multipartFile.getInputStream(), multipartFile.getSize()));
-
-        return s3Client.utilities().getUrl(GetUrlRequest.builder().bucket(bucket1).key(originalFilename).build()).toString();
+    @PostMapping(value = "/signup")
+    public ResponseEntity<String> register(@RequestParam(value = "profileImage", required = false ) MultipartFile profileImage, @Valid@RequestBody SignRequest signUpRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessages = new StringBuilder("회원가입 실패: ");
+            bindingResult.getFieldErrors().forEach(error ->
+                    errorMessages.append(error.getDefaultMessage()).append(" ")
+            );
+            return ResponseEntity.badRequest().body(errorMessages.toString());
+        }
+        boolean isSuccess = authService.signUp(signUpRequest,profileImage);
+        return ResponseEntity.ok(isSuccess ? "회원가입 성공하였습니다." : "회원가입 실패하였습니다.");
     }
+
+    @PostMapping(value = "/login")
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
+        String token = authService.login(loginRequest);
+        httpServletResponse.setHeader("Bearer_Token", token);
+        return ResponseEntity.ok("로그인이 성공하였습니다.");
+    }
+
+    @GetMapping(value = "/delete")
+    public ResponseEntity<String> secession() {
+        try {
+            String message = authService.secession();
+            return ResponseEntity.ok(message);
+        } catch (NotAcceptException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

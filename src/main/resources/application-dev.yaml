@@ -12,14 +12,14 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   application:
-    name: board
+    name: ecommerce
   datasource:
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://mariadb.cjq82ikaejvr.ap-northeast-2.rds.amazonaws.com:3306/project2?useUnicode=true&characterEncoding=UTF-8
   jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+    #database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:
       ddl-auto: update
     properties:
