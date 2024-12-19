@@ -40,7 +40,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/resources/static/**","/auth/login","/auth/signup","/books","/books/{id}","books/category/{category}").permitAll()
-                        .requestMatchers("/auth/secession", "/cart/add").hasAuthority("ROLE_USER")
+                        .requestMatchers("/auth/secession", "/cart/add", "/api/mypage/**").hasAuthority("ROLE_USER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
