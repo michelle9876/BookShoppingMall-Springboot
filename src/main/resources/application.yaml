@@ -1,1 +1,8 @@
-spring.application.name=ecommerce
+server:
+  port: 8080
+logging:
+  config: classpath:logback-spring-dev.xml
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
