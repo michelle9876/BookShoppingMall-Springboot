@@ -68,6 +68,7 @@ public class User {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Builder.Default
     @Transient
     private Set<Authority> authorities = Set.of(Authority.ROLE_USER);
 
