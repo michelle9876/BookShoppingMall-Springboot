@@ -22,7 +22,7 @@ import java.util.Map;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(DataSourceProperties.class)
-@EntityScan(basePackages = "com.github.ecommerce.data.entity.auth")
+@EntityScan(basePackages = "com.github.ecommerce.data.entity")
 @EnableJpaRepositories(
         basePackages = {
                 "com.github.ecommerce.data.repository.auth"
