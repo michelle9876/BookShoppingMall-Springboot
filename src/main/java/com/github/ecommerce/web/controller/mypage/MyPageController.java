@@ -1,5 +1,6 @@
 package com.github.ecommerce.web.controller.mypage;
 
+import com.github.ecommerce.service.exception.S3Exception;
 import com.github.ecommerce.service.mypage.MyPageService;
 import com.github.ecommerce.service.security.CustomUserDetails;
 import com.github.ecommerce.web.dto.mypage.*;
@@ -66,6 +67,10 @@ public class MyPageController {
         try{
             //유저 정보 수정하기
             result = myPageService.putUserInfo(id, userInfo, image);
+        } catch (S3Exception e) {
+            return ResponseEntity
+                    .status( e.getStatusCode())
+                    .body(new UserInfoDTO(e.getMessage(), e.getStatusCode()));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -138,7 +143,6 @@ public class MyPageController {
     @DeleteMapping("/deleteCartItems")
     public ResponseEntity<DefaultDTO> deleteCartItems(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            //  @RequestBody CartDetailDTO cartDetailDTO,
             @RequestBody List<CartDetailDTO> cartDetailDTOs
     ) {
         // 토큰에서 user 정보 가져오기
@@ -155,7 +159,7 @@ public class MyPageController {
                     .body(new DefaultDTO(MyPageStatus.CART_ID_IS_NULL));
         }
         //장바구니 삭제
-        DefaultDTO result = myPageService.deleteCartItems(cartDetailDTOs);
+        DefaultDTO result = myPageService.deleteCartItems(userId, cartDetailDTOs);
 
         return ResponseEntity.ok(result);
     }
