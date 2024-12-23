@@ -22,11 +22,13 @@ public class UserInfoDTO {
     private String detailsAddress;
 
      public UserInfoDTO(String msg, int code){
+         this.status = new DefaultDTO(); // status 초기화
          this.status.setMessage(msg);
          this.status.setCode(code);
      }
 
     public UserInfoDTO(MyPageStatus myPageStatus) {
+        this.status = new DefaultDTO(); // status 초기화
         this.status.setMessage(myPageStatus.getMessage());
         this.status.setCode(myPageStatus.getCode());
     }

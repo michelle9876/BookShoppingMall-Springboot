@@ -16,11 +16,13 @@ public class PaymentListDTO {
     private List<PaymentDetailDTO> payments;
 
     public PaymentListDTO(MyPageStatus myPageStatus) {
+        this.status = new DefaultDTO(); // status 초기화
         this.status.setMessage(myPageStatus.getMessage());
         this.status.setCode(myPageStatus.getCode());
     }
     public PaymentListDTO(String msg, int code){
-        status.setMessage(msg);
-        status.setCode(code);
+        this.status = new DefaultDTO(); // status 초기화
+        this.status.setMessage(msg);
+        this.status.setCode(code);
     }
 }
