@@ -17,6 +17,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestURI = request.getRequestURI(); // 요청 URI를 가져옴
+        // /v3/api-docs 경로는 JWT 인증을 통과하도록 설정
+        if (requestURI.equals("/v3/api-docs") || requestURI.startsWith("/swagger-ui")) {
+            filterChain.doFilter(request, response); // 필터 체인을 계속 진행
+            return; // 더 이상 처리하지 않음
+        }
+
         String jwtToken = jwtTokenProvider.resolveToken(request);
 
         if (jwtToken != null ) {
