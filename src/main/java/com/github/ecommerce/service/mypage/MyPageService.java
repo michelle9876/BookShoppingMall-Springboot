@@ -128,6 +128,7 @@ public class MyPageService {
                         .publisher(item.getBook().getPublisher())
                         .bookImage(item.getBook().getBookImageUrl())
                         .quantity(item.getQuantity())
+                        .stockQuantity(item.getBook().getStockQuantity())
                         .build()
         ).toList();
 
@@ -156,6 +157,7 @@ public class MyPageService {
                 .publisher(item.getBook().getPublisher())
                 .bookImage(item.getBook().getBookImageUrl())
                 .quantity(item.getQuantity())
+                .stockQuantity(item.getBook().getStockQuantity())
                 .build();
 
 
@@ -171,11 +173,13 @@ public class MyPageService {
     //장바구니 옵션 수정
     @Transactional(transactionManager = "tmJpa1")
     public DefaultDTO putCartOption(Integer userId, CartDetailDTO cartDetailDTO) {
-        Cart cartItem = cartRepository.findById(cartDetailDTO.getCartId()).orElse(null);
+        Cart cartItem = cartRepository.findByIdFetchJoin(cartDetailDTO.getCartId()).orElse(null);
         if(cartItem == null) {
             return new DefaultDTO(MyPageStatus.CART_ERROR);
         }else if(!cartItem.getUser().getUserId().equals(userId)){
             return new DefaultDTO(MyPageStatus.USER_ERROR_FORBIDDEN);
+        }else if(cartItem.getBook().getStockQuantity() < cartDetailDTO.getQuantity()){
+            return new DefaultDTO(MyPageStatus.CART_QUANTITY_ERROR);
         }
         cartItem.setQuantity(cartDetailDTO.getQuantity());
         return new DefaultDTO(MyPageStatus.CART_PUT);

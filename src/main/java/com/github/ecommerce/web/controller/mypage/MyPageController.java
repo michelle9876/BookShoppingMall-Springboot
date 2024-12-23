@@ -143,7 +143,6 @@ public class MyPageController {
     @DeleteMapping("/deleteCartItems")
     public ResponseEntity<DefaultDTO> deleteCartItems(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            //  @RequestBody CartDetailDTO cartDetailDTO,
             @RequestBody List<CartDetailDTO> cartDetailDTOs
     ) {
         // 토큰에서 user 정보 가져오기
