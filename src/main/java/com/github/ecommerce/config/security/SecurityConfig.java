@@ -39,7 +39,10 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/resources/static/**","/auth/login","/auth/signup","/books","/books/{id}","books/category/{category}").permitAll()
+                        .requestMatchers("/resources/static/**","/auth/login","/auth/signup",
+                                "/books","/books/{id}","books/category/{category}"
+                                ,"/v3/api-docs/**", "/swagger-ui/**"
+                        ).permitAll()
                         .requestMatchers("/auth/secession", "/cart/add", "/api/mypage/**").hasAuthority("ROLE_USER")
                         .anyRequest().authenticated()
                 )
