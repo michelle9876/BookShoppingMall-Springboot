@@ -39,7 +39,7 @@ public class BookService {
                 (int)book.getPrice(),
                 book.getSummary(),
                 book.getAuthor(),
-                book.getCategory(),
+                book.getPublisher(),
                 amount
         );
     }
