@@ -183,16 +183,20 @@ public class MyPageService {
 
     //장바구니 삭제
     @Transactional(transactionManager = "tmJpa1")
-    public DefaultDTO deleteCartItems(List<CartDetailDTO>  cartDetailDTOs) {
+    public DefaultDTO deleteCartItems(Integer userId, List<CartDetailDTO>  cartDetailDTOs) {
 
         // 각 항목에 대해 삭제 처리
         for (CartDetailDTO cartDetailDTO : cartDetailDTOs) {
             Cart cartItem = cartRepository.findById(cartDetailDTO.getCartId()).orElse(null);
+
             if(cartItem == null) {
                 return new DefaultDTO(MyPageStatus.CART_ERROR);
+            }else if(!cartItem.getUser().getUserId().equals(userId)){
+                return new DefaultDTO(MyPageStatus.CART_ID_ACCESS_ERROR);
             }
             cartRepository.delete(cartItem);
         }
+
         return new DefaultDTO(MyPageStatus.CART_DELETE);
     }
 

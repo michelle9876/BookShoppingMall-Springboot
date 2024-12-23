@@ -26,6 +26,7 @@ public enum MyPageStatus {
     CART_ERROR("장바구니 작업 중 에러가 발생했습니다.", 500),
     CART_NOT_FOUNDED("장바구니에 해당 상품이 없습니다.", 404),
     CART_ID_IS_NULL("상품을 선택해주세요.", 400),
+    CART_ID_ACCESS_ERROR("상품삭제 권한이 없습니다.", 401),
 
     // 결제내역
     PAYMENT_LIST_RETURN("결제내역 목록 요청이 완료되었습니다.", 200),
