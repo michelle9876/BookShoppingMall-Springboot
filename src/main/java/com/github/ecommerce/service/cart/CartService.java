@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -56,4 +58,7 @@ public class CartService {
         );
     }
 
+    public List<CartResponse> getCartDetailsByUserId(Integer userId) {
+        return null;
+    }
 }

@@ -9,10 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookInfo {
-    private int bookId;
-    private String title;
-    private double price;
-    private int stockQuantity;
-
+public class BookInfoForPaymentPage {
+        private String title;
+        private Integer quantity;
+        private float total;
 }
+
+

@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentProductDTO {
-    private Integer paymentProductId;
-    private Integer quantity;
-    private Float totalPrice;
+public class PaymentProductResponseDTO {
+    private String bookTitle;
+    private float price;
+    private int quantity;
+    private float totalPrice;
 }

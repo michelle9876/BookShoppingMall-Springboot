@@ -23,6 +23,8 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer paymentId;
 
+    @Column(name = "imp_uid")
+    private Integer impUid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -53,8 +55,6 @@ public class Payment {
 
     @Column(name = "expected_delivery")
     private Timestamp expectedDelivery;
-
-
 
 
     @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)

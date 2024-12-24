@@ -1,45 +1,39 @@
 package com.github.ecommerce.web.controller.payment;
 
 import com.github.ecommerce.service.payment.PaymentService;
-import com.github.ecommerce.web.dto.payment.PaymentInfoDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.github.ecommerce.web.dto.payment.PaymentRequestDTO;
+import com.github.ecommerce.web.dto.payment.PaymentResponseDTO;
+import com.siot.IamportRestClient.exception.IamportResponseException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/payments")
+@RequiredArgsConstructor
+@RequestMapping("/payments")
 public class PaymentController {
-
     private final PaymentService paymentService;
 
-    @Autowired
-    public PaymentController(PaymentService paymentService) {
-        this.paymentService = paymentService;
+    @PostMapping("/process")
+    public ResponseEntity<PaymentResponseDTO> processPayment(@RequestBody PaymentRequestDTO paymentRequestDTO) throws IamportResponseException, IOException {
+        PaymentResponseDTO response = paymentService.processPayment(paymentRequestDTO);
+        return ResponseEntity.ok(response);
     }
 
-   @PostMapping("/process")
-    public ResponseEntity<String> processPayment(@RequestBody PaymentInfoDTO paymentInfo) {
-        // Temporary- Hardcoded : user ID
-        int userId = 1;
+    @GetMapping
+    public ResponseEntity<List<PaymentResponseDTO>> getAllPayments() {
+        return ResponseEntity.ok(paymentService.getAllPayments());
+    }
 
-        // Validate credit card number using Luhn algorithm
-       if (!paymentService.validateCreditCard(paymentInfo.getPaymentCard().getCardNumber())){
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Invalid credit card number");
-       }
+    @GetMapping("/{id}")
+    public ResponseEntity<PaymentResponseDTO> getPaymentById(@PathVariable Integer id) {
+        return paymentService.getPaymentById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-       // Validate shipping address
-       if (!paymentService.validateAddress(paymentInfo.getShippingAddress())) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Invalid shipping address");
 
-       }
-       // Process the payment using the service and calculate total price
-        float totalPrice = paymentService.processOrder(paymentInfo, userId);
-
-//        paymentService.savePaymentInfo(paymentInfo);
-        return ResponseEntity.status(HttpStatus.OK).body("Payment processed successfully. Total price: " + totalPrice);
-   }
 }
