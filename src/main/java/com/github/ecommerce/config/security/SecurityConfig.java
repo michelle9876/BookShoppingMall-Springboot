@@ -64,7 +64,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:63342")); // 프론트 배포 주소
+        configuration.setAllowedOrigins(List.of("https://bookshoppingmall.vercel.app/")); // 프론트 배포 주소
+//        configuration.setAllowedOrigins(List.of("http://localhost:63342")); // 프론트 배포 주소
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Bearer_Token");
         configuration.addAllowedHeader("*");
