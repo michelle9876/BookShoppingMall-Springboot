@@ -28,14 +28,14 @@ public class MyPageController {
 
     // 유저정보 가져오기
     @GetMapping("/getUserInfo")
-    public ResponseEntity<UserInfoDTO> getUserInfo(
+    public ResponseEntity<ApiResponse<UserInfoDTO>> getUserInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         //토큰에서 user 정보 가져오기
         if(userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new UserInfoDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+                    .body(new ApiResponse<>(false, "로그인된 사용자만 이용하실 수 있습니다.",null ));
         }
         Integer userId = userDetails.getUserId();
 
@@ -143,15 +143,15 @@ public class MyPageController {
 
     //장바구니 상세
     @GetMapping("/getCartItem/{id}")
-    public ResponseEntity<CartListDTO> getCartItem(
+    public ResponseEntity<ApiResponse<CartDetailDTO>> getCartItem(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable String id
     ) {
         // 토큰에서 user 정보 가져오기
-        if(userDetails == null) {
+        if (userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new CartListDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+                    .body(new ApiResponse<>(false, MyPageStatus.USER_INFO_ERROR.getMessage(),null ));
         }
         Integer userId = userDetails.getUserId();
         try{
@@ -171,15 +171,15 @@ public class MyPageController {
 
     // 장바구니 옵션 수정
     @PutMapping("/putCartOption")
-    public ResponseEntity<DefaultDTO> putCartOption(
+    public ResponseEntity<ApiResponse> putCartOption(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CartDetailDTO cartDetailDTO
     ) {
         // 토큰에서 user 정보 가져오기
-        if(userDetails == null) {
+        if (userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new DefaultDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+                    .body(new ApiResponse<>(false, MyPageStatus.USER_INFO_ERROR.getMessage(),null ));
         }
         Integer userId = userDetails.getUserId();
         try{
@@ -203,22 +203,22 @@ public class MyPageController {
 
     //  장바구니  삭제
     @DeleteMapping("/deleteCartItems")
-    public ResponseEntity<DefaultDTO> deleteCartItems(
+    public ResponseEntity<ApiResponse> deleteCartItems(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody List<CartDetailDTO> cartDetailDTOs
     ) {
         // 토큰에서 user 정보 가져오기
-        if(userDetails == null) {
+        if (userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new DefaultDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+                    .body(new ApiResponse<>(false, MyPageStatus.USER_INFO_ERROR.getMessage(),null ));
         }
         Integer userId = userDetails.getUserId();
 
-        if(cartDetailDTOs.size() == 0){
+        if(cartDetailDTOs.isEmpty()){
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new DefaultDTO(MyPageStatus.CART_ID_IS_NULL));
+                    .body(new ApiResponse<>(false, MyPageStatus.CART_ID_IS_NULL.getMessage(),null ));
         }
         try{
             //장바구니 삭제
@@ -265,15 +265,15 @@ public class MyPageController {
 
     // 결제 상세정보
     @GetMapping("/getPaymentDetail/{id}")
-    public ResponseEntity<PaymentListDTO> getPaymentDetail(
+    public ResponseEntity<ApiResponse<PaymentDetailDTO>> getPaymentDetail(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable String id
     ) {
-        // 토큰에서 user 정보 가져오기
-        if (userDetails == null) {
+        //토큰에서 user 정보 가져오기
+        if(userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new PaymentListDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+                    .body(new ApiResponse<>(false, "로그인된 사용자만 이용하실 수 있습니다.",null ));
         }
         Integer userId = userDetails.getUserId();
         try{

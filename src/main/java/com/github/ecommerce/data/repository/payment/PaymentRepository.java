@@ -16,6 +16,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     @Query("SELECT p From Payment p JOIN FETCH p.paymentProducts pp WHERE p.user.userId = :userId ORDER BY p.paymentId DESC")
     Page<Payment> findAllByUser_UserId(@Param("userId") Integer userId, Pageable pageable);
 
-    @Query("SELECT p From Payment p JOIN FETCH p.paymentProducts pp WHERE p.paymentId = :paymentId")
+    @Query("SELECT p From Payment p JOIN FETCH p.paymentProducts pp WHERE p.paymentId = :paymentId ORDER BY p.paymentId, pp.paymentProductId")
     Optional<Payment> findByIdJoinPaymentProduct(@Param("paymentId") Integer paymentId);
 }

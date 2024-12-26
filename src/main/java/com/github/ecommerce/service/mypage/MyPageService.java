@@ -93,9 +93,9 @@ public class MyPageService {
     }
 
     //장바구니 상세
-    public CartListDTO getCartItem(Integer userId, String id) {
+    public CartDetailDTO getCartItem(Integer userId, String id) {
         Integer cartId = Integer.valueOf(id);
-        Cart item = cartRepository.findByIdFetchJoin(cartId).orElse(null);
+        Cart item = cartRepository.findByIdFetchJoin(cartId, userId).orElse(null);
         if(item == null) {
             throw new NotFoundException(MyPageStatus.CART_NOT_FOUNDED.getMessage());
         }else if(!item.getUser().getUserId().equals(userId)) {
@@ -106,8 +106,8 @@ public class MyPageService {
 
     //장바구니 옵션 수정
     @Transactional(transactionManager = "tmJpa1")
-    public DefaultDTO putCartOption(Integer userId, CartDetailDTO cartDetailDTO) {
-        Cart cartItem = cartRepository.findByIdFetchJoin(cartDetailDTO.getCartId()).orElse(null);
+    public void putCartOption(Integer userId, CartDetailDTO cartDetailDTO) {
+        Cart cartItem = cartRepository.findByIdFetchJoin(cartDetailDTO.getCartId(), userId).orElse(null);
         if(cartItem == null) {
             throw new NotFoundException(MyPageStatus.CART_NOT_FOUNDED.getMessage());
         }else if(cartItem.getUser() == null || !cartItem.getUser().getUserId().equals(userId)){
@@ -116,31 +116,22 @@ public class MyPageService {
             throw new QuantityExceededException(MyPageStatus.CART_QUANTITY_ERROR.getMessage());
         }
         cartItem.setQuantity(cartDetailDTO.getQuantity());
-        return new DefaultDTO(MyPageStatus.CART_PUT);
     }
 
     //장바구니 삭제
     @Transactional(transactionManager = "tmJpa1")
-    public DefaultDTO deleteCartItems(Integer userId, List<CartDetailDTO>  cartDetailDTOs) {
-
+    public void deleteCartItems(Integer userId, List<CartDetailDTO>  cartDetailDTOs) {
         // 각 항목에 대해 삭제 처리
         for (CartDetailDTO cartDetailDTO : cartDetailDTOs) {
             Cart cartItem = cartRepository.findById(cartDetailDTO.getCartId()).orElse(null);
             if(cartItem == null) {
-                return new DefaultDTO(MyPageStatus.CART_ERROR);
-            }else if(!cartItem.getUser().getUserId().equals(userId)){
-                return new DefaultDTO(MyPageStatus.CART_ID_ACCESS_ERROR);
                 throw new NotFoundException(MyPageStatus.CART_NOT_FOUNDED.getMessage());
             }else if(cartItem.getUser()== null || !cartItem.getUser().getUserId().equals(userId)){
                 throw new AccessDeniedException(MyPageStatus.CART_ID_ACCESS_ERROR.getMessage());
             }
             cartRepository.delete(cartItem);
         }
-
-        return new DefaultDTO(MyPageStatus.CART_DELETE);
     }
-
-
 
     //결제 내역 목록
     public Page<PaymentDetailDTO>  getPaymentList(Integer userId, Pageable pageable) {
@@ -151,7 +142,7 @@ public class MyPageService {
     }
 
     //결제내역 상세
-    public PaymentListDTO getPaymentDetail(Integer userId, String id) {
+    public PaymentDetailDTO getPaymentDetail(Integer userId, String id) {
         Integer paymentId = Integer.valueOf(id);
 
         Payment payment = paymentRepository.findByIdJoinPaymentProduct(paymentId).orElse(null);

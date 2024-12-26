@@ -19,11 +19,11 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
     Cart findByBookAndUser(Book book, User user);
 
     //마이페이지 사용
-    @Query("SELECT c From Cart c JOIN FETCH c.book b WHERE c.user.userId = :userId")
+    @Query("SELECT c From Cart c JOIN FETCH c.book b WHERE c.user.userId = :userId ORDER BY c.cartId DESC")
     Page<Cart> findAllByUserId(@Param("userId") Integer userId, Pageable pageable);
 
     //마이페이지 사용
-    @Query("SELECT c From Cart c JOIN FETCH c.book b WHERE c.cartId = :cartId")
-    Optional<Cart> findByIdFetchJoin(@Param("cartId") Integer cartId);
+    @Query("SELECT c From Cart c JOIN FETCH c.book b WHERE c.cartId = :cartId AND c.user.userId = :userId")
+    Optional<Cart> findByIdFetchJoin(@Param("cartId") Integer cartId, @Param("userId") Integer userId);
 
 }
