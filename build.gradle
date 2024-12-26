@@ -21,6 +21,11 @@ configurations {
 
 repositories {
     mavenCentral()
+
+    //    ++ Payment(아임포트-포트원) 관련: 추가!
+    maven { url 'https://jitpack.io' }
+
+
 }
 
 dependencies {
@@ -55,6 +60,10 @@ dependencies {
     // @ConfigurationProperties
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
+
+    //  ++ Payment(아임포트-포트원) 관련: 추가!
+    implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
+
     // Amazon S3
     implementation 'io.awspring.cloud:spring-cloud-aws-starter:3.1.1' // Spring Boot와 AWS의 통합을 도와주는 라이브러리
     implementation 'software.amazon.awssdk:s3:2.20.0' // Java 어플리케이션에서 Amazon S3(Simple Storage Service) 버킷에 접근할 수 있게 해주는 라이브러리
@@ -67,4 +76,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+tasks.named('bootJar') {
+    mainClass = 'com.github.ecommerce.EcommerceApplication'
 }

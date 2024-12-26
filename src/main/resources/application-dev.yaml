@@ -8,6 +8,9 @@ logging:
         SQL: DEBUG
 
 spring:
+  config:
+    activate:
+      on-profile: dev
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -40,13 +43,20 @@ cloud:
         bucket2:
           name: project2-book
     credentials:
-      access-key: ${ACCESS-KEY}
-      secret-key: ${SECRET-KEY}
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
     region:
       static: ap-northeast-2
       auto: false
     stack:
       auto: false
+
+# ++ IamPort 추가!!
+imp:
+  v1:
+    api:
+      key: ${IMP_KEY}
+      secret: ${IMP_SECRET_KEY}
 
 
 springdoc:

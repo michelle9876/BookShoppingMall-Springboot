@@ -1,5 +1,7 @@
 package com.github.ecommerce.config.security;
 
+import com.github.ecommerce.service.exception.CAuthenticationEntryPointException;
+import com.github.ecommerce.web.advice.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,10 +18,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.sendRedirect("/exceptions/entrypoint"); // `/exceptions/entrypoint`는 ExceptionController의 URI이다.
-        // 인증 실패 시 클라이언트에게 HTTP 401 Unauthorized 상태 코드와 함께 JSON 형태의 에러 메시지를 반환
-//        response.setContentType("application/json;charset=UTF-8");
-//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        response.getWriter().write("{\"error\": \"Unauthorized\"}");
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("{\"error\": \"Unauthorized\"}");
+        throw new CAuthenticationEntryPointException(ErrorCode.ENTRY_POINT_FAILURE);
     }
 }
