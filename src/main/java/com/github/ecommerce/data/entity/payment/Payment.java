@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -60,8 +61,8 @@ public class Payment {
     private LocalDateTime expectedDelivery;
 
 
-    @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
-    private List<PaymentProduct> paymentProducts; // 여러 PaymentProduct를 참조
+    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<PaymentProduct> paymentProducts = new ArrayList<>();; // 여러 PaymentProduct를 참조
 
     public Payment(String impUid, String merchantUid, User user, String paymentCard, String zipCode, String mainAddress, String detailsAddress, Float totalPrice, String receiverName, String receiverPhone, LocalDateTime paymentDate, LocalDateTime expectedDelivery) {
         this.impUid = impUid;
