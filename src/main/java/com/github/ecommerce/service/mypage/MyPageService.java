@@ -83,28 +83,13 @@ public class MyPageService {
 
 
     //장바구니 목록 가지고오기
-    public CartListDTO getCartItems(Integer userId) {
-        List<Cart> cartList = cartRepository.findAllByUserId(userId);
-        List<CartDetailDTO> items = cartList.stream().map(
-                //Cart -> CartDetailDTO
-                item -> CartDetailDTO.builder()
-                        .userId(item.getUser().getUserId())
-                        .cartId(item.getCartId())
-                        .bookId(item.getBook().getBookId())
-                        .title(item.getBook().getTitle())
-                        .price((int) item.getBook().getPrice())
-                        .author(item.getBook().getAuthor())
-                        .publisher(item.getBook().getPublisher())
-                        .bookImage(item.getBook().getBookImageUrl())
-                        .quantity(item.getQuantity())
-                        .stockQuantity(item.getBook().getStockQuantity())
-                        .build()
-        ).toList();
+    public Page<CartDetailDTO> getCartItems(Integer userId, Pageable pageable) {
+        // 카트 아이템을 페이지네이션하여 가져오기
+        Page<Cart> cartItems = cartRepository.findAllByUserId(userId, pageable);
 
-        CartListDTO result = new CartListDTO();
-        result.setCartItems(items);
-        result.setStatus(new DefaultDTO(MyPageStatus.CART_ITEMS_RETURN));
-        return result;
+        // Cart -> CartDetailDTO 변환 및 페이지 반환
+        return cartItems.map(CartDetailDTO::from); // Cart -> CartDetailDTO 변환
+
     }
 
     //장바구니 상세
@@ -116,27 +101,7 @@ public class MyPageService {
         }else if(!item.getUser().getUserId().equals(userId)) {
             return new CartListDTO(MyPageStatus.USER_ERROR_FORBIDDEN);
         }
-        CartDetailDTO cart = CartDetailDTO.builder()
-                .userId(item.getUser().getUserId())
-                .cartId(item.getCartId())
-                .bookId(item.getBook().getBookId())
-                .title(item.getBook().getTitle())
-                .price((int) item.getBook().getPrice())
-                .author(item.getBook().getAuthor())
-                .publisher(item.getBook().getPublisher())
-                .bookImage(item.getBook().getBookImageUrl())
-                .quantity(item.getQuantity())
-                .stockQuantity(item.getBook().getStockQuantity())
-                .build();
-
-
-        List<CartDetailDTO> carts = new ArrayList<>();
-        carts.add(cart);
-        CartListDTO result = new CartListDTO();
-        result.setStatus(new DefaultDTO(MyPageStatus.CART_RETURN));
-        result.setCartItems(carts);
-
-        return result;
+        return CartDetailDTO.from(item);
     }
 
     //장바구니 옵션 수정
@@ -176,43 +141,11 @@ public class MyPageService {
 
 
     //결제 내역 목록
-    public PaymentListDTO getPaymentList(Integer userId) {
-        List<Payment> paymentList = paymentRepository.findAllByUser_UserId(userId);
-
-        List<PaymentDetailDTO> itmes = paymentList.stream().map(
-                //Payment -> PaymentDetailDTO
-                item -> PaymentDetailDTO.builder()
-                        .userId(userId)
-                        .paymentId(item.getPaymentId())
-                        .paymentCard(item.getPaymentCard())
-                        .zipCode(item.getZipCode())
-                        .mainAddress(item.getMainAddress())
-                        .detailsAddress(item.getDetailsAddress())
-                        .totalPrice(Math.round(item.getTotalPrice()) )
-                        .receiverName(item.getReceiverName())
-                        .receiverPhone(item.getReceiverPhone())
-                        .paymentDate(item.getPaymentDate())
-                        .expectedDelivery(item.getExpectedDelivery())
-                        .paymentProducts(item.getPaymentProducts().stream().map(
-                                product -> PaymentProductDTO.builder()
-                                        .paymentProductId(product.getPaymentProductId())
-                                        .bookId(product.getBook().getBookId())
-                                        .title(product.getBook().getTitle())
-                                        .publisher(product.getBook().getPublisher())
-                                        .bookImage(product.getBook().getBookImageUrl())
-                                        .author(product.getBook().getAuthor())
-                                        .eachPrice((int) product.getBook().getPrice())
-                                        .eachTotalPrice(Math.round(product.getTotalPrice()))
-                                        .quantity(product.getQuantity())
-                                        .build()
-                        ).toList())
-                        .build()
-        ).toList();
-
-        PaymentListDTO result = new PaymentListDTO();
-        result.setPayments(itmes);
-        result.setStatus(new DefaultDTO(MyPageStatus.PAYMENT_LIST_RETURN));
-        return result;
+    public Page<PaymentDetailDTO>  getPaymentList(Integer userId, Pageable pageable) {
+        // 카트 아이템을 페이지네이션하여 가져오기
+        Page<Payment> paymentList = paymentRepository.findAllByUser_UserId(userId, pageable);
+        // Payment -> PaymentDetailDTO 변환 및 페이지 반환
+        return paymentList.map(item -> PaymentDetailDTO.from(item, userId));
     }
 
     //결제내역 상세
@@ -224,42 +157,7 @@ public class MyPageService {
             return new PaymentListDTO(MyPageStatus.PAYMENT_NOT_FOUNDED);
         }
 
-        PaymentDetailDTO detailInfo = PaymentDetailDTO.builder()
-                .userId(userId)
-                .paymentId(payment.getPaymentId())
-                .paymentCard(payment.getPaymentCard())
-                .zipCode(payment.getZipCode())
-                .mainAddress(payment.getMainAddress())
-                .detailsAddress(payment.getDetailsAddress())
-                .totalPrice(Math.round(payment.getTotalPrice()) )
-                .receiverName(payment.getReceiverName())
-                .receiverPhone(payment.getReceiverPhone())
-                .paymentDate(payment.getPaymentDate())
-                .expectedDelivery(payment.getExpectedDelivery())
-                .paymentProducts(payment.getPaymentProducts().stream().map(
-                        product -> PaymentProductDTO.builder()
-                                .paymentProductId(product.getPaymentProductId())
-                                .bookId(product.getBook().getBookId())
-                                .title(product.getBook().getTitle())
-                                .publisher(product.getBook().getPublisher())
-                                .bookImage(product.getBook().getBookImageUrl())
-                                .author(product.getBook().getAuthor())
-                                .eachPrice((int) product.getBook().getPrice())
-                                .eachTotalPrice(Math.round(product.getTotalPrice()))
-                                .quantity(product.getQuantity())
-                                .build()
-                ).toList())
-                .build();
-
-
-        List<PaymentDetailDTO> payments = new ArrayList<>();
-        payments.add(detailInfo);
-
-        PaymentListDTO result = new PaymentListDTO();
-        result.setStatus(new DefaultDTO(MyPageStatus.PAYMENT_RETURN));
-        result.setPayments(payments);
-
-        return result;
+        return PaymentDetailDTO.from( payment, userId);
     }
 
 }
