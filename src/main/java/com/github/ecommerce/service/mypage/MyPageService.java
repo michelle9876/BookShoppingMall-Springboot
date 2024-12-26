@@ -2,6 +2,7 @@ package com.github.ecommerce.service.mypage;
 
 import com.github.ecommerce.data.entity.auth.User;
 import com.github.ecommerce.data.entity.cart.Cart;
+import com.github.ecommerce.data.entity.payment.Payment;
 import com.github.ecommerce.data.repository.cart.CartRepository;
 import com.github.ecommerce.data.repository.mypage.UserRepository;
 import com.github.ecommerce.data.repository.payment.PaymentRepository;

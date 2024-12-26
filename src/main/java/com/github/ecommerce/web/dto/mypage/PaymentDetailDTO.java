@@ -4,6 +4,7 @@ import com.github.ecommerce.data.entity.payment.Payment;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -27,6 +28,9 @@ public class PaymentDetailDTO {
     private Timestamp expectedDelivery;
 
     private List<PaymentProductDTO> paymentProducts;
+
+    public PaymentDetailDTO(Integer userId, Integer paymentId, String paymentCard, String zipCode, String mainAddress, String detailsAddress, int round, String receiverName, String receiverPhone, LocalDateTime paymentDate, LocalDateTime expectedDelivery, List<PaymentProductDTO> list) {
+    }
 
     public static PaymentDetailDTO from(Payment item, Integer userId) {
         return new PaymentDetailDTO(

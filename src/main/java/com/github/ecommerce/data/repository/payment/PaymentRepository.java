@@ -4,8 +4,11 @@ import com.github.ecommerce.data.entity.payment.Payment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,5 +19,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     @Query("SELECT p From Payment p JOIN FETCH p.paymentProducts pp WHERE p.paymentId = :paymentId ORDER BY p.paymentId, pp.paymentProductId")
     Optional<Payment> findByIdJoinPaymentProduct(@Param("paymentId") Integer paymentId);
+
+    @Query("SELECT p FROM Payment p JOIN FETCH p.paymentProducts pp JOIN FETCH pp.book b WHERE p.user.userId = :userId")
+    List<Payment> findByUserId(@Param("userId") Integer userId);
 
 }

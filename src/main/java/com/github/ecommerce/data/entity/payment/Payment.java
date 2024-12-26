@@ -29,7 +29,7 @@ public class Payment {
     @Column(name = "merchant_uid")
     private String merchantUid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 

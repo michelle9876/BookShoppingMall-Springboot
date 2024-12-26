@@ -34,6 +34,16 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("/all/user")
+    public ResponseEntity<List<PaymentResponseDTO>> getPaymentsByUserId(@RequestParam Integer userId) {
+        List<PaymentResponseDTO> payments = paymentService.getPaymentsByUserId(userId);
+        if (payments.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(payments);
+        }
+    }
+
     @GetMapping
     public ResponseEntity<Page<PaymentResponseDTO>> getPageOfPayments(
             @RequestParam(defaultValue = "0") int page,
