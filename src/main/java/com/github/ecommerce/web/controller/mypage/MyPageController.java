@@ -71,7 +71,6 @@ public class MyPageController {
                     .body(new ApiResponse<>(false, MyPageStatus.USER_ERROR_FORBIDDEN.getMessage(),null ));
         }
 
-        UserInfoDTO result = null;
         String previousImageUrl = null;
         String newImageUrl = null;
         String basicImageUrl = "https://project2-profile.s3.ap-northeast-2.amazonaws.com/basic.jpg";
@@ -83,7 +82,7 @@ public class MyPageController {
                 previousImageUrl = myPageService.getPreviousImageUrl(userId);
             }
             //2. 유저정보 처리(트랜잭션)
-            result = myPageService.putUserInfo(userId, userInfo, newImageUrl);
+            UserInfoDTO result = myPageService.putUserInfo(userId, userInfo, newImageUrl);
 
             //3. 이미지 삭제처리(기존 이미지가 있으면 삭제)
             if (newImageUrl != null && !basicImageUrl.equals(previousImageUrl)) {
@@ -171,7 +170,7 @@ public class MyPageController {
 
     // 장바구니 옵션 수정
     @PutMapping("/putCartOption")
-    public ResponseEntity<ApiResponse> putCartOption(
+    public ResponseEntity<ApiResponse<String>> putCartOption(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CartDetailDTO cartDetailDTO
     ) {
@@ -203,7 +202,7 @@ public class MyPageController {
 
     //  장바구니  삭제
     @DeleteMapping("/deleteCartItems")
-    public ResponseEntity<ApiResponse> deleteCartItems(
+    public ResponseEntity<ApiResponse<String>> deleteCartItems(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody List<CartDetailDTO> cartDetailDTOs
     ) {
