@@ -1,5 +1,7 @@
 package com.github.ecommerce.config.security;
 
+import com.github.ecommerce.service.exception.CAccessDeniedException;
+import com.github.ecommerce.web.advice.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +19,9 @@ public class CustomerAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        accessDeniedException.printStackTrace();
-        response.sendRedirect("/exceptions/access-denied");
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("{\"error\": \"AccessDenied\"}");
+        throw new CAccessDeniedException(ErrorCode.ACCESS_DENIED);
     }
 }

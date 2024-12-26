@@ -7,11 +7,10 @@ import org.springframework.http.HttpStatus;
 
 
 @Getter
-public class CAuthenticationEntryPointException extends RuntimeException {
+public class CAccessDeniedException extends RuntimeException {
     private final HttpStatus httpStatus;
-    public CAuthenticationEntryPointException(ErrorCode errorCode) {
+    public CAccessDeniedException(ErrorCode errorCode) {
         super(errorCode.getErrorMessage());
         this.httpStatus = errorCode.getHttpStatus();
     }
 }
-

@@ -72,7 +72,7 @@ public class AwsS3Service {
     }
 
     //이미지를 S3에 업로드하고, S3에 저장된 이미지의 public url을  반환한다.
-    private String uploadImageToS3(MultipartFile image) throws IOException {
+    public String uploadImageToS3(MultipartFile image) throws IOException {
         String originalFilename = image.getOriginalFilename(); // 원본 파일 명
         String extension = originalFilename.substring(originalFilename.lastIndexOf(".")+1); // 확장자 명
 
