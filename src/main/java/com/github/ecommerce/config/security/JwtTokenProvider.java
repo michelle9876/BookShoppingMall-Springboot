@@ -18,7 +18,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,8 +25,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtTokenProvider {
-
-
     @Value("${jwt.secret-key-source}")
     private String secretKeySource;
     private Key secretKey ;
@@ -45,7 +42,6 @@ public class JwtTokenProvider {
                 .setSubject(email);
         claims.put("username", username);
         claims.put("roles", Set.of(Authority.ROLE_USER).stream().map(Authority::name).collect(Collectors.toSet()));
-//        claims.put("roles", roles.stream().map(Authority::name).collect(Collectors.toSet()));
 
         Date now = new Date();
 
