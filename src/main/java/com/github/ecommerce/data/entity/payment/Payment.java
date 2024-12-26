@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -23,6 +23,11 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer paymentId;
 
+    @Column(name = "imp_uid")
+    private String impUid;
+
+    @Column(name = "merchant_uid")
+    private String merchantUid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -49,14 +54,27 @@ public class Payment {
 
 
     @Column(name = "payment_date")
-    private Timestamp paymentDate;
+    private LocalDateTime paymentDate;
 
     @Column(name = "expected_delivery")
-    private Timestamp expectedDelivery;
-
-
+    private LocalDateTime expectedDelivery;
 
 
     @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
     private List<PaymentProduct> paymentProducts; // 여러 PaymentProduct를 참조
+
+    public Payment(String impUid, String merchantUid, User user, String paymentCard, String zipCode, String mainAddress, String detailsAddress, Float totalPrice, String receiverName, String receiverPhone, LocalDateTime paymentDate, LocalDateTime expectedDelivery) {
+        this.impUid = impUid;
+        this.merchantUid = merchantUid;
+        this.user = user;
+        this.paymentCard = paymentCard;
+        this.zipCode = zipCode;
+        this.mainAddress = mainAddress;
+        this.detailsAddress = detailsAddress;
+        this.totalPrice = totalPrice;
+        this.receiverName = receiverName;
+        this.receiverPhone = receiverPhone;
+        this.paymentDate = paymentDate;
+        this.expectedDelivery = expectedDelivery;
+    }
 }

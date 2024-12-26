@@ -32,7 +32,7 @@ public class MyPageController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         //토큰에서 user 정보 가져오기
-        if(userDetails == null) {
+        if (userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponse<>(false, "로그인된 사용자만 이용하실 수 있습니다.",null ));
@@ -58,14 +58,14 @@ public class MyPageController {
             @RequestParam(value = "image", required = false) MultipartFile image
     ) {
         //토큰에서 user 정보 가져오기
-        if(userDetails == null) {
+        if (userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponse<>(false, "로그인된 사용자만 이용하실 수 있습니다.",null ));
         }
         Integer userId = userDetails.getUserId();
 
-        if(!userId.equals(Integer.valueOf(id))){
+        if (!userId.equals(Integer.valueOf(id))) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponse<>(false, MyPageStatus.USER_ERROR_FORBIDDEN.getMessage(),null ));
@@ -120,7 +120,7 @@ public class MyPageController {
             @RequestParam(defaultValue = "15") int size
     ) {
         //토큰에서 user 정보 가져오기
-        if(userDetails == null) {
+        if (userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponse<>(false, MyPageStatus.USER_NOT_FOUNDED.getMessage(),null ));
@@ -214,6 +214,7 @@ public class MyPageController {
         }
         Integer userId = userDetails.getUserId();
 
+
         if(cartDetailDTOs.isEmpty()){
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -286,3 +287,4 @@ public class MyPageController {
         }
     }
 }
+

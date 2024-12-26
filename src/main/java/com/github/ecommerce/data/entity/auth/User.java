@@ -3,7 +3,8 @@ package com.github.ecommerce.data.entity.auth;
 import com.github.ecommerce.service.exception.InvalidValueException;
 import com.github.ecommerce.web.dto.auth.Authority;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -70,6 +71,10 @@ public class User {
     @Builder.Default
     @Transient
     private Set<Authority> authorities = Set.of(Authority.ROLE_USER);
+
+    public User(Integer userId) {
+    }
+
 
     public void deleteUser() {
         this.deletedAt = LocalDateTime.now();

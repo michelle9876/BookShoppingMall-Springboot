@@ -1,0 +1,19 @@
+package com.github.ecommerce.web.dto.payment;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class PaymentInformation {
+    private String cardNumber;  // Only saving card number
+    private ShippingAddressDTO shippingAddress;
+    private List<BookDTO> books;
+}

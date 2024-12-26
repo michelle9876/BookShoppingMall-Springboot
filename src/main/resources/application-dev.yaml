@@ -51,6 +51,13 @@ cloud:
     stack:
       auto: false
 
+# ++ IamPort 추가!!
+imp:
+  v1:
+    api:
+      key: ${IMP_KEY}
+      secret: ${IMP_SECRET_KEY}
+
 
 springdoc:
   default-consumes-media-type: application/json

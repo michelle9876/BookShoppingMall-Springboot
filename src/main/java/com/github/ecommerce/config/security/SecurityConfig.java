@@ -26,35 +26,47 @@ import java.util.List;
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
 
+//    -- This FilterChain : For Test용!!
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .headers(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .rememberMe(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/resources/static/**","/auth/login","/auth/signup",
-                                "/books","/books/{id}","books/category/{category}"
-                                ,"/v3/api-docs/**", "/swagger-ui/**"
-                        ).permitAll()
-                        .requestMatchers("/auth/secession", "/cart/add", "/api/mypage/**").hasAuthority("ROLE_USER")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                        .accessDeniedHandler(new CustomerAccessDeniedHandler())
-                )
-
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-
+                .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
+//    -- This FilterChain includes Payment Controller!!
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .headers(AbstractHttpConfigurer::disable)
+//                .formLogin(AbstractHttpConfigurer::disable)
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .httpBasic(AbstractHttpConfigurer::disable)
+//                .rememberMe(AbstractHttpConfigurer::disable)
+//                .sessionManagement(sessionManagement -> sessionManagement
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                )
+//                .authorizeHttpRequests(authz -> authz
+//                        .requestMatchers("/resources/static/**","/auth/login","/auth/signup",
+//                                "/books","/books/{id}","books/category/{category}"
+//                                ,"/v3/api-docs/**", "/swagger-ui/**"
+//                        ).permitAll()
+//                        .requestMatchers("/auth/secession", "/cart/add", "/api/mypage/*", "/payments/*").hasAuthority("ROLE_USER")
+//                        .anyRequest().authenticated()
+//                )
+//                .exceptionHandling(exceptionHandling -> exceptionHandling
+//                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+//                        .accessDeniedHandler(new CustomerAccessDeniedHandler())
+//                )
+//
+//                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -64,8 +76,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://bookshoppingmall.vercel.app/")); // 프론트 배포 주소
-//        configuration.setAllowedOrigins(List.of("http://localhost:63342")); // 프론트 배포 주소
+        configuration.setAllowedOrigins(List.of(
+                "https://bookshoppingmall.vercel.app", // 프론트 배포 주소
+                "https://novelnovel.vercel.app"
+        ));
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Bearer_Token");
         configuration.addAllowedHeader("*");
