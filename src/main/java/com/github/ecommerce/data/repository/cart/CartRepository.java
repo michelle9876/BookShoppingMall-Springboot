@@ -21,10 +21,6 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
     @Query("SELECT c From Cart c JOIN FETCH c.book b WHERE c.user.userId = :userId ORDER BY c.cartId DESC")
     List<Cart> findAllByUserId(@Param("userId")Integer userId);
 
-    //processPayment 호출
-    @Query("SELECT c From Cart c JOIN FETCH c.book b WHERE c.user.userId = :userId ORDER BY c.cartId DESC")
-    List<Cart> findAllByUserId(@Param("userId")Integer userId);
-
 
     //마이페이지 사용
     @Query("SELECT c From Cart c JOIN FETCH c.book b WHERE c.user.userId = :userId ORDER BY c.cartId DESC")
