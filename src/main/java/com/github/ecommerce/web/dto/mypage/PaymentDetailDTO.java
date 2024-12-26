@@ -29,9 +29,6 @@ public class PaymentDetailDTO {
 
     private List<PaymentProductDTO> paymentProducts;
 
-    public PaymentDetailDTO(Integer userId, Integer paymentId, String paymentCard, String zipCode, String mainAddress, String detailsAddress, int round, String receiverName, String receiverPhone, LocalDateTime paymentDate, LocalDateTime expectedDelivery, List<PaymentProductDTO> list) {
-    }
-
     public static PaymentDetailDTO from(Payment item, Integer userId) {
         return new PaymentDetailDTO(
                 userId,
