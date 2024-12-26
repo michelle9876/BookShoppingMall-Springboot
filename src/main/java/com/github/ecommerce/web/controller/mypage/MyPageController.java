@@ -1,15 +1,17 @@
 package com.github.ecommerce.web.controller.mypage;
 
-import com.github.ecommerce.service.exception.S3Exception;
+import com.github.ecommerce.service.exception.*;
 import com.github.ecommerce.service.mypage.MyPageService;
 import com.github.ecommerce.service.security.CustomUserDetails;
+import com.github.ecommerce.web.dto.ApiResponse;
 import com.github.ecommerce.web.dto.mypage.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,21 +84,30 @@ public class MyPageController {
 
     //  장바구니 목록
     @GetMapping("/getCartItems")
-    public ResponseEntity<CartListDTO> getCartItems(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+    public ResponseEntity<ApiResponse<Page<CartDetailDTO>>> getCartItems(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
     ) {
         //토큰에서 user 정보 가져오기
         if(userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new CartListDTO(MyPageStatus.USER_INFO_ERROR.getMessage(), MyPageStatus.USER_INFO_ERROR.getCode()));
+                    .body(new ApiResponse<>(false, MyPageStatus.USER_NOT_FOUNDED.getMessage(),null ));
         }
         Integer userId = userDetails.getUserId();
 
-        //장바구니 목록 가지고오기
-        CartListDTO result = myPageService.getCartItems(userId);
+        try{
+            //장바구니 목록 가지고오기
+            Page<CartDetailDTO> result = myPageService.getCartItems(userId, PageRequest.of(page, size));
+            return ResponseEntity.ok(new ApiResponse<>(true, MyPageStatus.CART_ITEMS_RETURN.getMessage(), result));
 
-        return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, MyPageStatus.CART_ERROR.getMessage(), null));
+        }
+
     }
 
     //장바구니 상세
@@ -167,21 +178,29 @@ public class MyPageController {
 
     //결제내역
     @GetMapping("/getPaymentList")
-    public ResponseEntity<PaymentListDTO> getPaymentList(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+    public ResponseEntity<ApiResponse<Page<PaymentDetailDTO>>> getPaymentList(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
     ) {
         // 토큰에서 user 정보 가져오기
         if (userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new PaymentListDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+                    .body(new ApiResponse<>(false, MyPageStatus.USER_INFO_ERROR.getMessage(),null ));
         }
         Integer userId = userDetails.getUserId();
 
-        //결제내역 목록 가지고오기
-        PaymentListDTO result = myPageService.getPaymentList(userId);
+        try{
+            //결제내역 목록 가지고오기
+            Page<PaymentDetailDTO> result = myPageService.getPaymentList(userId, PageRequest.of(page, size));
+            return ResponseEntity.ok(new ApiResponse<>(true, MyPageStatus.PAYMENT_LIST_RETURN.getMessage(), result));
 
-        return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, MyPageStatus.CART_ERROR.getMessage(), null ));
+        }
     }
 
     // 결제 상세정보
