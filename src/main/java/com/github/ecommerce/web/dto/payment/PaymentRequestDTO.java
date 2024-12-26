@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class PaymentRequestDTO {
     private Integer userId;
     private String impUid;
+    private String merchantUid;
     private String paymentCard;
     private String zipCode;
     private String mainAddress;

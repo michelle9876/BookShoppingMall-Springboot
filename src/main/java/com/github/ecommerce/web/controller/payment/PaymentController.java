@@ -5,6 +5,7 @@ import com.github.ecommerce.web.dto.payment.PaymentRequestDTO;
 import com.github.ecommerce.web.dto.payment.PaymentResponseDTO;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +24,27 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<PaymentResponseDTO>> getAllPayments() {
-        return ResponseEntity.ok(paymentService.getAllPayments());
+        List<PaymentResponseDTO> payments = paymentService.getAllPayments();
+        if (payments.isEmpty()){
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(paymentService.getAllPayments());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<PaymentResponseDTO>> getPageOfPayments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        Page<PaymentResponseDTO> payments = paymentService.getPageOfPayments(page, size);
+        if (payments.isEmpty()){
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(payments);
+        }
     }
 
     @GetMapping("/{id}")
@@ -34,6 +53,4 @@ public class PaymentController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
-
 }

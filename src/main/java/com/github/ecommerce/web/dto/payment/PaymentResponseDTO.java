@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -12,8 +13,8 @@ import java.sql.Timestamp;
 public class PaymentResponseDTO {
     private Integer paymentId;
     private float totalPrice;
-    private Timestamp paymentDate;
-    private Timestamp expectedDelivery;
+    private LocalDateTime paymentDate;
+    private LocalDateTime expectedDelivery;
 
 
 }
