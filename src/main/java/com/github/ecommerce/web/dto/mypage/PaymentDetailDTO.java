@@ -25,10 +25,9 @@ public class PaymentDetailDTO {
     private String receiverName;
     private String receiverPhone;
     private LocalDateTime paymentDate;
-    private  LocalDateTime expectedDelivery;
+    private LocalDateTime expectedDelivery;
 
     private List<PaymentProductDTO> paymentProducts;
-
 
     public static PaymentDetailDTO from(Payment item, Integer userId) {
         return new PaymentDetailDTO(

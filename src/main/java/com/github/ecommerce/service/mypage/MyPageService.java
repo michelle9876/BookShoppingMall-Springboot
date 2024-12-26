@@ -87,7 +87,7 @@ public class MyPageService {
     //장바구니 목록 가지고오기
     public Page<CartDetailDTO> getCartItems(Integer userId, Pageable pageable) {
         // 카트 아이템을 페이지네이션하여 가져오기
-        Page<Cart> cartItems = cartRepository.findAllByUserId(userId, pageable);
+        Page<Cart> cartItems = cartRepository.findAllByUserIdPageable(userId, pageable);
 
         // Cart -> CartDetailDTO 변환 및 페이지 반환
         return cartItems.map(CartDetailDTO::from); // Cart -> CartDetailDTO 변환

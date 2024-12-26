@@ -26,17 +26,6 @@ import java.util.List;
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
 
-//    -- This FilterChain : For Test용!!
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(authz -> authz
-//                        .anyRequest().permitAll()
-//                )
-//                .csrf(AbstractHttpConfigurer::disable);
-//        return http.build();
-//    }
-//    -- This FilterChain includes Payment Controller!!
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -54,7 +43,7 @@ public class SecurityConfig {
                                 "/books","/books/{id}","/books/category/{category}"
                                 ,"/v3/api-docs/**", "/swagger-ui/**"
                         ).permitAll()
-                        .requestMatchers("/auth/secession", "/cart/add", "/api/mypage/*", "/payments/*").hasAuthority("ROLE_USER")
+                        .requestMatchers("/auth/secession", "/cart/add", "/api/mypage/**", "/payments/**").hasAuthority("ROLE_USER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
