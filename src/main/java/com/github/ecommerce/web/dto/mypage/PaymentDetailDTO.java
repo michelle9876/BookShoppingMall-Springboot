@@ -24,13 +24,11 @@ public class PaymentDetailDTO {
     private Integer totalPrice;
     private String receiverName;
     private String receiverPhone;
-    private Timestamp paymentDate;
-    private Timestamp expectedDelivery;
+    private LocalDateTime paymentDate;
+    private  LocalDateTime expectedDelivery;
 
     private List<PaymentProductDTO> paymentProducts;
 
-    public PaymentDetailDTO(Integer userId, Integer paymentId, String paymentCard, String zipCode, String mainAddress, String detailsAddress, int round, String receiverName, String receiverPhone, LocalDateTime paymentDate, LocalDateTime expectedDelivery, List<PaymentProductDTO> list) {
-    }
 
     public static PaymentDetailDTO from(Payment item, Integer userId) {
         return new PaymentDetailDTO(
