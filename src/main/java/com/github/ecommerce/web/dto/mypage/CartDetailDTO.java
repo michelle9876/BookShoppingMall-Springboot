@@ -1,6 +1,5 @@
 package com.github.ecommerce.web.dto.mypage;
 
-import com.github.ecommerce.data.entity.auth.User;
 import com.github.ecommerce.data.entity.cart.Cart;
 import lombok.*;
 
