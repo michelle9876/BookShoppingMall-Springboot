@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthController {
     private final AuthService authService;
 
-    @GetMapping(value = "/email")
+    @PostMapping(value = "/email")
     public ResponseEntity<CheckedEmailResponse> checkEmail(@Valid@RequestBody CheckedEmailRequest emailCheckRequest, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             throw new BadRequestException(ErrorCode.REGISTER_FAILURE);
