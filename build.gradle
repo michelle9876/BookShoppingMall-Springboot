@@ -77,3 +77,6 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+tasks.named('bootJar') {
+    mainClass = 'com.github.ecommerce.EcommerceApplication'
+}

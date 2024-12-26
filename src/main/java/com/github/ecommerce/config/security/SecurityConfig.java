@@ -50,7 +50,10 @@ public class SecurityConfig {
 //                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 //                )
 //                .authorizeHttpRequests(authz -> authz
-//                        .requestMatchers("/resources/static/**","/auth/login","/auth/signup","/books","/books/{id}","books/category/{category}").permitAll()
+//                        .requestMatchers("/resources/static/**","/auth/login","/auth/signup",
+//                                "/books","/books/{id}","books/category/{category}"
+//                                ,"/v3/api-docs/**", "/swagger-ui/**"
+//                        ).permitAll()
 //                        .requestMatchers("/auth/secession", "/cart/add", "/api/mypage/*", "/payments/*").hasAuthority("ROLE_USER")
 //                        .anyRequest().authenticated()
 //                )
@@ -73,7 +76,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:63342")); // 프론트 배포 주소
+        configuration.setAllowedOrigins(List.of(
+                "https://bookshoppingmall.vercel.app", // 프론트 배포 주소
+                "https://novelnovel.vercel.app"
+        ));
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Bearer_Token");
         configuration.addAllowedHeader("*");

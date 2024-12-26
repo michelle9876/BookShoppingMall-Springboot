@@ -1,5 +1,6 @@
 package com.github.ecommerce.data.entity.auth;
 
+import com.github.ecommerce.service.exception.InvalidValueException;
 import com.github.ecommerce.web.dto.auth.Authority;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -78,6 +79,69 @@ public class User {
     public void deleteUser() {
         this.deletedAt = LocalDateTime.now();
     }
+
+    //유저 정보 수정 책임분리 추가 ==============
+    public void updateProfileImage(String newImageUrl) {
+        if (newImageUrl != null) {
+            this.profileImage = newImageUrl;
+        }
+    }
+
+    public void updateUserName(String userName) {
+        if (userName != null && !userName.isEmpty()) {
+            if(userName.length() <= 50){
+                this.userName = userName;
+            }else{
+                throw new InvalidValueException("updateUserName : 50자 이내의 이름을 설정해주세요.");
+            }
+        }
+    }
+
+    public void updatePhone(String phone) {
+        if (phone != null  && !phone.isEmpty()) {
+            if(phone.length() == 11){
+                this.phone = phone;
+            }else{
+                throw new InvalidValueException("updatePhone : 전화번호는 11자로 설정되어야 합니다.");
+            }
+
+        }
+    }
+
+    public void updateGender(String gender) {
+        if (gender != null  && !gender.isEmpty()) {
+            if(gender.length() == 1){
+                this.gender = gender;
+            }else{
+                throw new InvalidValueException("updateGender : 성별은 [M,F,U]로 설정되어야 합니다.");
+            }
+        }
+    }
+
+    public void updateZipCode(String zipCode) {
+        if (zipCode != null && !zipCode.isEmpty()) {
+            if(zipCode.length()  <= 7){
+                this.zipCode = zipCode;
+            }else{
+                throw new InvalidValueException("updateZipCode : 우편번호는 7자 이내로 설정되어야 합니다.");
+            }
+
+        }
+    }
+
+    public void updateMainAddress(String mainAddress) {
+        if (mainAddress != null && !mainAddress.isEmpty()) {
+            this.mainAddress = mainAddress;
+        }
+    }
+
+    public void updateDetailAddress(String detailAddress) {
+        if (detailAddress != null && !detailAddress.isEmpty()) {
+            this.detailAddress = detailAddress;
+        }
+    }
+    //유저 정보 수정 책임분리 추가 ==============
+
 }
 //    @ElementCollection(targetClass = Authority.class)
 //    @Enumerated(EnumType.STRING)
