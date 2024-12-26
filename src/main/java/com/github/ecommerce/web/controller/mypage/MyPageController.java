@@ -46,7 +46,7 @@ public class MyPageController {
 
     // 유저정보 수정
     @PutMapping("/putUserInfo/{id}")
-    public ResponseEntity<UserInfoDTO> putUserInfo(
+    public ResponseEntity<ApiResponse<UserInfoDTO>> putUserInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable String id, @ModelAttribute UserInfoDTO userInfo,
             @RequestParam(value = "image", required = false) MultipartFile image
@@ -55,30 +55,55 @@ public class MyPageController {
         if(userDetails == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new UserInfoDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+                    .body(new ApiResponse<>(false, "로그인된 사용자만 이용하실 수 있습니다.",null ));
         }
         Integer userId = userDetails.getUserId();
 
         if(!userId.equals(Integer.valueOf(id))){
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new UserInfoDTO("본인의 정보만 수정할 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
+                    .body(new ApiResponse<>(false, MyPageStatus.USER_ERROR_FORBIDDEN.getMessage(),null ));
         }
 
         UserInfoDTO result = null;
+        String previousImageUrl = null;
+        String newImageUrl = null;
+        String basicImageUrl = "https://project2-profile.s3.ap-northeast-2.amazonaws.com/basic.jpg";
+
         try{
-            //유저 정보 수정하기
-            result = myPageService.putUserInfo(id, userInfo, image);
+            //1. 이미지 처리
+            if (image != null) {
+                newImageUrl = myPageService.uploadProfileImage(image);
+                previousImageUrl = myPageService.getPreviousImageUrl(userId);
+            }
+            //2. 유저정보 처리(트랜잭션)
+            result = myPageService.putUserInfo(userId, userInfo, newImageUrl);
+
+            //3. 이미지 삭제처리(기존 이미지가 있으면 삭제)
+            if (newImageUrl != null && !basicImageUrl.equals(previousImageUrl)) {
+                myPageService.deleteProfileImage(previousImageUrl);
+            }
+
+            return ResponseEntity.ok(new ApiResponse<>(true, MyPageStatus.USER_INFO_PUT_RETURN.getMessage(), result));
+
         } catch (S3Exception e) {
             return ResponseEntity
                     .status( e.getStatusCode())
-                    .body(new UserInfoDTO(e.getMessage(), e.getStatusCode()));
+                    .body(new ApiResponse<>(false, e.getMessage(),null ));
+        } catch (InvalidValueException e) {
+            //새로 등록한 이미지 삭제처리(트랜잭션에서 실패한다면?)
+            if (newImageUrl != null) {
+                myPageService.deleteProfileImage(newImageUrl);
+            }
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(false, e.getMessage(),null ));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new UserInfoDTO(MyPageStatus.USER_INFO_ERROR.getMessage(), MyPageStatus.USER_INFO_ERROR.getCode()));
+                    .body(new ApiResponse<>(false, MyPageStatus.USER_INFO_ERROR.getMessage(),null ));
         }
-        return ResponseEntity.ok(result);
+
     }
 
 
