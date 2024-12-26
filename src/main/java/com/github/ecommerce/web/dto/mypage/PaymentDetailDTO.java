@@ -1,15 +1,10 @@
 package com.github.ecommerce.web.dto.mypage;
 
-import com.github.ecommerce.data.entity.cart.Cart;
+import com.github.ecommerce.data.entity.payment.Payment;
 import lombok.*;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 @Setter
 @Getter
@@ -32,6 +27,25 @@ public class PaymentDetailDTO {
     private Timestamp expectedDelivery;
 
     private List<PaymentProductDTO> paymentProducts;
+
+    public static PaymentDetailDTO from(Payment item, Integer userId) {
+        return new PaymentDetailDTO(
+                userId,
+                item.getPaymentId(),
+                item.getPaymentCard(),
+                item.getZipCode(),
+                item.getMainAddress(),
+                item.getDetailsAddress(),
+                Math.round(item.getTotalPrice()),
+                item.getReceiverName(),
+                item.getReceiverPhone(),
+                item.getPaymentDate(),
+                item.getExpectedDelivery(),
+                item.getPaymentProducts().stream()
+                        .map(PaymentProductDTO::from)
+                        .toList()
+        );
+    }
 
 }
 

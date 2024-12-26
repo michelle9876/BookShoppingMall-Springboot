@@ -1,5 +1,8 @@
 package com.github.ecommerce.service.exception;
 
+import lombok.Getter;
+
+@Getter
 public class S3Exception extends RuntimeException{
     private final int statusCode;
 
@@ -8,7 +11,4 @@ public class S3Exception extends RuntimeException{
         this.statusCode = statusCode;
     }
 
-    public int getStatusCode() {
-        return statusCode;
-    }
 }
