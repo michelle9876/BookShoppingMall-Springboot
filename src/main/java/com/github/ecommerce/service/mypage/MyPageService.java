@@ -2,6 +2,7 @@ package com.github.ecommerce.service.mypage;
 
 import com.github.ecommerce.data.entity.auth.User;
 import com.github.ecommerce.data.entity.cart.Cart;
+import com.github.ecommerce.data.entity.payment.Payment;
 import com.github.ecommerce.data.repository.cart.CartRepository;
 import com.github.ecommerce.data.repository.mypage.UserRepository;
 import com.github.ecommerce.data.repository.payment.PaymentRepository;
@@ -86,7 +87,7 @@ public class MyPageService {
     //장바구니 목록 가지고오기
     public Page<CartDetailDTO> getCartItems(Integer userId, Pageable pageable) {
         // 카트 아이템을 페이지네이션하여 가져오기
-        Page<Cart> cartItems = cartRepository.findAllByUserId(userId, pageable);
+        Page<Cart> cartItems = cartRepository.findAllByUserIdPageable(userId, pageable);
 
         // Cart -> CartDetailDTO 변환 및 페이지 반환
         return cartItems.map(CartDetailDTO::from); // Cart -> CartDetailDTO 변환

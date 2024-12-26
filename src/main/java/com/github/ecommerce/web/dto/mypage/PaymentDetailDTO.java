@@ -4,6 +4,7 @@ import com.github.ecommerce.data.entity.payment.Payment;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -23,8 +24,8 @@ public class PaymentDetailDTO {
     private Integer totalPrice;
     private String receiverName;
     private String receiverPhone;
-    private Timestamp paymentDate;
-    private Timestamp expectedDelivery;
+    private LocalDateTime paymentDate;
+    private LocalDateTime expectedDelivery;
 
     private List<PaymentProductDTO> paymentProducts;
 
