@@ -9,5 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BookDTO {
     private Integer  bookId;
+    private String bookImage;
+    private String bookTitle;
+    private float bookPrice;
     private Integer quantity;
 }

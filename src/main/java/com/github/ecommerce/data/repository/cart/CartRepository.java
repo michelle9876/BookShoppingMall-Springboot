@@ -17,6 +17,9 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<Cart, Integer> {
 
     Cart findByBookAndUser(Book book, User user);
+    //processPayment 호출
+    @Query("SELECT c From Cart c JOIN FETCH c.book b WHERE c.user.userId = :userId ORDER BY c.cartId DESC")
+    List<Cart> findAllByUserId(@Param("userId")Integer userId);
 
     //processPayment 호출
     @Query("SELECT c From Cart c JOIN FETCH c.book b WHERE c.user.userId = :userId ORDER BY c.cartId DESC")

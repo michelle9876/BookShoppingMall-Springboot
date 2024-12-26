@@ -8,6 +8,7 @@ import com.github.ecommerce.data.repository.mypage.UserRepository;
 import com.github.ecommerce.data.repository.payment.PaymentProductRepository;
 import com.github.ecommerce.data.repository.payment.PaymentRepository;
 import com.github.ecommerce.service.book.BookService;
+import com.github.ecommerce.web.dto.payment.BookDTO;
 import com.github.ecommerce.web.dto.payment.PaymentRequestDTO;
 import com.github.ecommerce.web.dto.payment.PaymentResponseDTO;
 import com.siot.IamportRestClient.exception.IamportResponseException;
@@ -35,30 +36,46 @@ public class PaymentService {
     private final BookService bookService;
     private final IamPortService iamPortService;
 
-    public List<PaymentResponseDTO> getAllPayments() {
-        List<Payment> payments = paymentRepository.findAll(); // 모든 결제 정보 가져오기
-        return payments.stream()
-                .map(payment -> new PaymentResponseDTO(
-                        payment.getPaymentId(),
-                        payment.getTotalPrice(),
-                        payment.getPaymentDate(),
-                        payment.getExpectedDelivery()
-                ))
-                .toList();
 
-//                .collect(Collectors.toList()); // PaymentResponseDTO 리스트로 변환
+
+//    public List<PaymentResponseDTO> getAllPayments() {
+//        List<Payment> payments = paymentRepository.findAll(); // 모든 결제 정보 가져오기
+//        return payments.stream()
+//                .map(payment -> new PaymentResponseDTO(
+//                        payment.getPaymentId(),
+//                        payment.getUser().getUserName(),
+//                        payment.getUser().getPhone(),
+//                        payment.getMainAddress(),
+//                        payment.getDetailsAddress(),
+//                        payment.getZipCode(),
+//                        payment.getTotalPrice(),
+//                        payment.getPaymentDate(),
+//                        payment.getExpectedDelivery()
+//                ))
+//                .toList();
+//
+////                .collect(Collectors.toList()); // PaymentResponseDTO 리스트로 변환
+//    }
+
+    public List<PaymentResponseDTO> getAllPayments() {
+        List<Payment> payments = paymentRepository.findAll();
+        return getPaymentResponseDTOS(payments);
     }
 
+
+    public List<PaymentResponseDTO> getPaymentsByUserId(Integer userId) {
+        List<Payment> payments = paymentRepository.findByUserId(userId);
+        return getPaymentResponseDTOS(payments);
+    }
 
     public Optional<PaymentResponseDTO> getPaymentById(Integer id) {
-        Optional<Payment> payment = paymentRepository.findById(id); // ID로 결제 정보 검색
-        return payment.map(p -> new PaymentResponseDTO(
-                p.getPaymentId(),
-                p.getTotalPrice(),
-                p.getPaymentDate(),
-                p.getExpectedDelivery()
-        )); // 결제 정보를 DTO로 변환하여 반환
+
+        return paymentRepository.findById(id).map(this::convertToPaymentResponseDTO);
+
+//        Optional<Payment> payments = paymentRepository.findById(id); // ID로 결제 정보 검색
+//        return getPaymentResponseDTOS(payments);
     }
+
 
     @Transactional
     public PaymentResponseDTO processPayment(PaymentRequestDTO paymentRequestDTO) throws IamportResponseException, IOException {
@@ -68,8 +85,8 @@ public class PaymentService {
         // 2. 책 정보 및 총 금액 계산
         float total = getTotalPrice(cartItems);
 
-        // 3. 결제 검증 (모의 구현)
-        this.verifyIamPortPayment(paymentRequestDTO, total);
+//        // 3. 결제 검증 (모의 구현)
+//        this.verifyIamPortPayment(paymentRequestDTO, total);
 
         // 4. 재고 감소 및 카트 삭제
         bookService.reduceBookStocks(cartItems);
@@ -77,15 +94,28 @@ public class PaymentService {
 
         // 5. 결제 정보 저장
         final Payment savedPayment = saveNewPayment(paymentRequestDTO, total);
+        return convertToPaymentResponseDTO(savedPayment);
+    }
+
+    public Page<PaymentResponseDTO> getPageOfPayments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return paymentRepository.findAll(pageable).map(this::convertToPaymentResponseDTO);
+    }
 
         // 6. 결제 응답 반환
-        return new PaymentResponseDTO(
-                savedPayment.getPaymentId(), // 결제 ID
-                savedPayment.getTotalPrice(), // 총 금액
-                savedPayment.getPaymentDate(), // 결제 일시
-                savedPayment.getExpectedDelivery() // 예상 배송 일시
-        );
-    }
+//        return new PaymentResponseDTO(
+//                savedPayment.getPaymentId(), // 결제 ID
+//                savedPayment.getUser().getUserName(),
+//                savedPayment.getUser().getPhone(),
+//                savedPayment.getUser().getMainAddress(),
+//                savedPayment.getUser().getDetailAddress(),
+//                savedPayment.getUser().getZipCode(),
+//                savedPayment.
+//                savedPayment.getTotalPrice(), // 총 금액
+//                savedPayment.getPaymentDate(), // 결제 일시
+//                savedPayment.getExpectedDelivery() // 예상 배송 일시
+//        );
+//    }
 
     private void verifyIamPortPayment(PaymentRequestDTO paymentRequestDTO, float total) throws IamportResponseException, IOException {
         if (!iamPortService.verifyPayment(paymentRequestDTO.getImpUid(), new BigDecimal(total))) {
@@ -93,23 +123,67 @@ public class PaymentService {
         }
     }
 
-    private static float getTotalPrice(List<Cart> cartItems) {
-        float total = 0;
-        for (Cart cartItem : cartItems) {
-            float totalBookPrice = cartItem.getQuantity() * cartItem.getBook().getPrice();
-            total += totalBookPrice;
-        }
-        return total;
-    }
+
 
     private Payment saveNewPayment(PaymentRequestDTO paymentRequestDTO, float total) {
-        final Payment payment = this.newPaymentFromData(paymentRequestDTO, total);
-
-        // 결제 정보 저장
-        return paymentRepository.save(payment);
+//        final Payment payment = this.newPaymentFromData(paymentRequestDTO, total);
+            User user = userRepository.findById(paymentRequestDTO.getUserId()).orElseThrow();
+            LocalDateTime now = LocalDateTime.now();
+            Payment payment = new Payment(
+                    paymentRequestDTO.getImpUid(),
+                    paymentRequestDTO.getMerchantUid(),
+                    user,
+                    paymentRequestDTO.getPaymentCard(),
+                    paymentRequestDTO.getZipCode(),
+                    paymentRequestDTO.getMainAddress(),
+                    paymentRequestDTO.getDetailsAddress(),
+                    total,
+                    paymentRequestDTO.getReceiverName(),
+                    paymentRequestDTO.getReceiverPhone(),
+                    now,
+                    now.plusDays(7)
+            );
+            // 결제 정보 저장
+            return paymentRepository.save(payment);
     }
 
-    private Payment newPaymentFromData(PaymentRequestDTO paymentRequestDTO, float total) {
+        private List<PaymentResponseDTO> getPaymentResponseDTOS(List<Payment> payments) {
+            return payments.stream().map(this::convertToPaymentResponseDTO).toList();
+        }
+
+        private PaymentResponseDTO convertToPaymentResponseDTO(Payment payment) {
+            List<BookDTO> books = payment.getPaymentProducts().stream()
+                    .map(pp -> new BookDTO(
+                            pp.getBook().getBookId(),
+                            pp.getBook().getBookImageUrl(),
+                            pp.getBook().getTitle(),
+                            pp.getBook().getPrice(),
+                            pp.getQuantity()))
+                    .toList();
+            return new PaymentResponseDTO(
+                    payment.getPaymentId(),
+                    payment.getUser().getUserName(),
+                    payment.getUser().getPhone(),
+                    payment.getMainAddress(),
+                    payment.getDetailsAddress(),
+                    payment.getZipCode(),
+                    books,
+                    payment.getTotalPrice(),
+                    payment.getPaymentDate(),
+                    payment.getExpectedDelivery()
+            );
+        }
+
+        private static float getTotalPrice(List<Cart> cartItems) {
+            float total = 0;
+            for (Cart cartItem : cartItems) {
+                float totalBookPrice = cartItem.getQuantity() * cartItem.getBook().getPrice();
+                total += totalBookPrice;
+            }
+            return total;
+        }
+
+        private Payment newPaymentFromData(PaymentRequestDTO paymentRequestDTO, float total) {
 //        final User user = new User(paymentRequestDTO.getUserId());
         final User user = userRepository.findById(paymentRequestDTO.getUserId()).orElseThrow();
         final LocalDateTime now = LocalDateTime.now();
@@ -127,14 +201,13 @@ public class PaymentService {
                 now.plusDays(7)); // 예상 배송 시간 설정
     }
 
-    public Page<PaymentResponseDTO> getPageOfPayments(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
 
-        return paymentRepository.findAll(pageable).map(payment -> new PaymentResponseDTO(
-                payment.getPaymentId(),
-                payment.getTotalPrice(),
-                payment.getPaymentDate(),
-                payment.getExpectedDelivery()
-        ));
+
+//        return paymentRepository.findAll(pageable).map(payment -> new PaymentResponseDTO(
+//                payment.getPaymentId(),
+//                payment.getTotalPrice(),
+//                payment.getPaymentDate(),
+//                payment.getExpectedDelivery()
+//        ));
     }
-}
+
