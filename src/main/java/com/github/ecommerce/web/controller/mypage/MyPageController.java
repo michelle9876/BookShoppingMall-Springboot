@@ -39,9 +39,15 @@ public class MyPageController {
         }
         Integer userId = userDetails.getUserId();
 
-        //유저 정보 가지고오기
-        UserInfoDTO result = myPageService.getUserInfo(userId);
-        return ResponseEntity.ok(result);
+        try{
+            //유저 정보 가지고오기
+            UserInfoDTO result = myPageService.getUserInfo(userId);
+            return ResponseEntity.ok(new ApiResponse<>(true, MyPageStatus.USER_INFO_RETURN.getMessage(), result));
+        } catch (NotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(false, e.getMessage(),null ));
+        }
     }
 
     // 유저정보 수정
@@ -148,11 +154,19 @@ public class MyPageController {
                     .body(new CartListDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
         }
         Integer userId = userDetails.getUserId();
-
-        //장바구니 상세 가지고오기
-        CartListDTO result = myPageService.getCartItem(userId, id);
-
-        return ResponseEntity.ok(result);
+        try{
+            //장바구니 상세 가지고오기
+            CartDetailDTO result = myPageService.getCartItem(userId, id);
+            return ResponseEntity.ok(new ApiResponse<>(true, MyPageStatus.CART_RETURN.getMessage(), result));
+        } catch (AccessDeniedException ade) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(false, ade.getMessage(),null ));
+        } catch (NotFoundException nfe) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(false, nfe.getMessage(),null ));
+        }
     }
 
     // 장바구니 옵션 수정
@@ -168,11 +182,23 @@ public class MyPageController {
                     .body(new DefaultDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
         }
         Integer userId = userDetails.getUserId();
-
-        //장바구니 옵션 수정
-        DefaultDTO result = myPageService.putCartOption(userId, cartDetailDTO);
-
-        return ResponseEntity.ok(result);
+        try{
+            //장바구니 옵션 수정
+            myPageService.putCartOption(userId, cartDetailDTO);
+            return ResponseEntity.ok(new ApiResponse<>(true, MyPageStatus.CART_PUT.getMessage(), null));
+        } catch (AccessDeniedException ade) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(false, ade.getMessage(),null ));
+        } catch (NotFoundException nfe) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(false, nfe.getMessage(),null ));
+        } catch (QuantityExceededException qee) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(false, qee.getMessage(),null ));
+        }
     }
 
     //  장바구니  삭제
@@ -194,10 +220,19 @@ public class MyPageController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new DefaultDTO(MyPageStatus.CART_ID_IS_NULL));
         }
-        //장바구니 삭제
-        DefaultDTO result = myPageService.deleteCartItems(userId, cartDetailDTOs);
-
-        return ResponseEntity.ok(result);
+        try{
+            //장바구니 삭제
+            myPageService.deleteCartItems(userId, cartDetailDTOs);
+            return ResponseEntity.ok(new ApiResponse<>(true, MyPageStatus.CART_DELETE.getMessage(), null));
+        } catch (NotFoundException nfe) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(false, nfe.getMessage(),null ));
+        } catch (AccessDeniedException ade) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(false, ade.getMessage(),null ));
+        }
     }
 
 
@@ -241,10 +276,14 @@ public class MyPageController {
                     .body(new PaymentListDTO("로그인된 사용자만 이용하실 수 있습니다.", HttpStatus.UNAUTHORIZED.value()));
         }
         Integer userId = userDetails.getUserId();
-
-        //결제내역 상세 가지고오기
-        PaymentListDTO result = myPageService.getPaymentDetail(userId, id);
-
-        return ResponseEntity.ok(result);
+        try{
+            //결제내역 상세 가지고오기
+            PaymentDetailDTO result = myPageService.getPaymentDetail(userId, id);
+            return ResponseEntity.ok(new ApiResponse<>(true, MyPageStatus.PAYMENT_RETURN.getMessage(), result));
+        } catch (NotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(false, e.getMessage(),null ));
+        }
     }
 }

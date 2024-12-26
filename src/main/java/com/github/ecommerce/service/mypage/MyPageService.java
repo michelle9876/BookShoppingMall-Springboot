@@ -97,9 +97,9 @@ public class MyPageService {
         Integer cartId = Integer.valueOf(id);
         Cart item = cartRepository.findByIdFetchJoin(cartId).orElse(null);
         if(item == null) {
-            return new CartListDTO(MyPageStatus.CART_NOT_FOUNDED);
+            throw new NotFoundException(MyPageStatus.CART_NOT_FOUNDED.getMessage());
         }else if(!item.getUser().getUserId().equals(userId)) {
-            return new CartListDTO(MyPageStatus.USER_ERROR_FORBIDDEN);
+            throw new AccessDeniedException(MyPageStatus.USER_ERROR_FORBIDDEN.getMessage());
         }
         return CartDetailDTO.from(item);
     }
@@ -109,11 +109,11 @@ public class MyPageService {
     public DefaultDTO putCartOption(Integer userId, CartDetailDTO cartDetailDTO) {
         Cart cartItem = cartRepository.findByIdFetchJoin(cartDetailDTO.getCartId()).orElse(null);
         if(cartItem == null) {
-            return new DefaultDTO(MyPageStatus.CART_ERROR);
-        }else if(!cartItem.getUser().getUserId().equals(userId)){
-            return new DefaultDTO(MyPageStatus.USER_ERROR_FORBIDDEN);
+            throw new NotFoundException(MyPageStatus.CART_NOT_FOUNDED.getMessage());
+        }else if(cartItem.getUser() == null || !cartItem.getUser().getUserId().equals(userId)){
+            throw new AccessDeniedException(MyPageStatus.CART_ID_ACCESS_ERROR.getMessage());
         }else if(cartItem.getBook().getStockQuantity() < cartDetailDTO.getQuantity()){
-            return new DefaultDTO(MyPageStatus.CART_QUANTITY_ERROR);
+            throw new QuantityExceededException(MyPageStatus.CART_QUANTITY_ERROR.getMessage());
         }
         cartItem.setQuantity(cartDetailDTO.getQuantity());
         return new DefaultDTO(MyPageStatus.CART_PUT);
@@ -126,11 +126,13 @@ public class MyPageService {
         // 각 항목에 대해 삭제 처리
         for (CartDetailDTO cartDetailDTO : cartDetailDTOs) {
             Cart cartItem = cartRepository.findById(cartDetailDTO.getCartId()).orElse(null);
-
             if(cartItem == null) {
                 return new DefaultDTO(MyPageStatus.CART_ERROR);
             }else if(!cartItem.getUser().getUserId().equals(userId)){
                 return new DefaultDTO(MyPageStatus.CART_ID_ACCESS_ERROR);
+                throw new NotFoundException(MyPageStatus.CART_NOT_FOUNDED.getMessage());
+            }else if(cartItem.getUser()== null || !cartItem.getUser().getUserId().equals(userId)){
+                throw new AccessDeniedException(MyPageStatus.CART_ID_ACCESS_ERROR.getMessage());
             }
             cartRepository.delete(cartItem);
         }
@@ -154,7 +156,7 @@ public class MyPageService {
 
         Payment payment = paymentRepository.findByIdJoinPaymentProduct(paymentId).orElse(null);
         if(payment == null) {
-            return new PaymentListDTO(MyPageStatus.PAYMENT_NOT_FOUNDED);
+            throw new NotFoundException(MyPageStatus.PAYMENT_NOT_FOUNDED.getMessage());
         }
 
         return PaymentDetailDTO.from( payment, userId);
