@@ -30,7 +30,7 @@ public class PaymentController {
         if (payments.isEmpty()){
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.ok(paymentService.getAllPayments());
+            return ResponseEntity.ok(payments);
         }
     }
 

@@ -62,7 +62,7 @@ public class Payment {
 
 
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<PaymentProduct> paymentProducts = new ArrayList<>();; // 여러 PaymentProduct를 참조
+    private List<PaymentProduct> paymentProducts = new ArrayList<>(); // 여러 PaymentProduct를 참조
 
     public Payment(String impUid, String merchantUid, User user, String paymentCard, String zipCode, String mainAddress, String detailsAddress, Float totalPrice, String receiverName, String receiverPhone, LocalDateTime paymentDate, LocalDateTime expectedDelivery) {
         this.impUid = impUid;
