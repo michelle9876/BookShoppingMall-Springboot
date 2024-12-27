@@ -66,8 +66,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-                "https://bookshoppingmall.vercel.app", // 프론트 배포 주소
-                "https://novelnovel.vercel.app"
+                "https://bookshoppingmall.vercel.app"// 프론트 배포 주소
         ));
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Bearer_Token");
