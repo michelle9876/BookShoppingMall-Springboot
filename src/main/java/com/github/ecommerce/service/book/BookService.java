@@ -46,6 +46,7 @@ public class BookService {
                 book.getSummary(),
                 book.getAuthor(),
                 book.getPublisher(),
+                book.getStockQuantity(),
                 amount
         );
     }
