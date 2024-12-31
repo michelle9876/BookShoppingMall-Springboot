@@ -16,6 +16,7 @@ public class BookDetailResponse {
     private String bookSummary;
     private String author;
     private String publisher;
+    private Integer stock;
 
     @NotNull
     @Min(value = 1)
