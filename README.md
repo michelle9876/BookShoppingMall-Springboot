@@ -47,7 +47,7 @@
 -->
 
 ### 2.3 URL 구조- API 
-
+[📒 API 명세서 참고](https://far-cormorant-298.notion.site/API-1667279b2a39807081fad1cc3eb3260c?pvs=4)
 |App|Method|URL|Note|Authentication|
 |:---:|:---:|---|---|:---:|
 |auth|POST|'/auth/signup'|회원가입||
