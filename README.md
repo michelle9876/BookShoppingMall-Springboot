@@ -35,7 +35,7 @@
 
 
 ### 2.2 배포 URL
-- [FE 배포 URL : ]()
+- [FE 배포 URL : bookshoppingmall.vercel.app](bookshoppingmall.vercel.app)
 - [BE 배포 URL : https://project-be.site](https://project-be.site)
 <!--
 - 테스트용 계정
