@@ -291,7 +291,7 @@
 [![](https://github.com/weniv/project_sample_repo/raw/main/erd.png)](https://github.com/weniv/project_sample_repo/blob/main/erd.png)
 
 - [https://dbdiagram.io/home도](https://dbdiagram.io/home%EB%8F%84) 많이 사용합니다.
--->
+
 ## 8. Architecture
 
 - 아래 Architecture 설계도는 PPT를 사용했습니다.
@@ -305,3 +305,4 @@
 - 요구사항 및 기능 명세에서 제외한 기능을 작성하면 좋을 것 같습니다.
 - 예를 들어, 이미지 저장을 위해 Amazon S3를 사용했다. OAuth 기능 구현을 위해 카카오로그인 API를 사용했다. 등등
 - 요구사항 및 기능 명세에서 간단하게 설명만 하였다면 구현한 API를 자세하게 설명해도 괜찮습니다.
+-->
