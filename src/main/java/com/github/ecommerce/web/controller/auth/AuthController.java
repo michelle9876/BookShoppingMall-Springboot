@@ -46,6 +46,12 @@ public class AuthController {
         return ResponseEntity.ok(isSuccess ? new SignResponse(true,"회원가입 성공하였습니다.") : new SignResponse(false,"회원가입 실패하였습니다."));
     }
 
+    @PostMapping(value = "/json/signup")
+    public ResponseEntity<SignResponse> register(@RequestBody SignRequest signUpRequest) {
+        boolean isSuccess = authService.signUp(signUpRequest, null);
+        return ResponseEntity.ok(isSuccess ? new SignResponse(true,"회원가입 성공하였습니다.") : new SignResponse(false,"회원가입 실패하였습니다."));
+    }
+
     @PostMapping(value = "/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {

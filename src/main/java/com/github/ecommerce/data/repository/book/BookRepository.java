@@ -26,7 +26,4 @@ public interface BookRepository extends JpaRepository<Book,Integer> {
     @Query("UPDATE Book b SET b.stockQuantity = b.stockQuantity - :amount WHERE b.bookId = :id AND b.stockQuantity >= :amount")
     int reduceStockQuantityById(@Param("id") Integer id, @Param("amount") int amount);
 
-    @Modifying
-    @Query("UPDATE Book b SET b.stockQuantity = b.stockQuantity - :stockReduction WHERE b.bookId = :bookId AND b.stockQuantity >= :stockReduction")
-    int reduceStockQuantitiesByIds(List<BookStockUpdateDto> bookStockUpdateDtos);
 }

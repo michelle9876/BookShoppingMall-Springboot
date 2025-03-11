@@ -19,12 +19,20 @@ public class CartController {
     private final CartService cartService;
 
     // 장바구니 담기
+//    @PostMapping("/add")
+//    public ResponseEntity<CartResponse> addToCart(@Valid @RequestBody CartRequest request, @AuthenticationPrincipal CustomUserDetails user
+//    ) {
+//        CartResponse response = cartService.addToCart(request,user.getUserId());
+//        return ResponseEntity.ok(response);
+//    }
+
     @PostMapping("/add")
-    public ResponseEntity<CartResponse> addToCart(@Valid @RequestBody CartRequest request, @AuthenticationPrincipal CustomUserDetails user
+    public ResponseEntity<CartResponse> addToCart(
+            @Valid @RequestBody CartRequest request,
+            @RequestParam int userId
     ) {
-        CartResponse response = cartService.addToCart(request,user.getUserId());
+        CartResponse response = cartService.addToCart(request, userId);
         return ResponseEntity.ok(response);
     }
-
 
 }
